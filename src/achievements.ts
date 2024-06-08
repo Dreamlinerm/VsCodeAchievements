@@ -1,9 +1,12 @@
 import * as vscode from "vscode";
+import { StatusBar } from "./StatusBar";
+import { AchievementPanel } from "./AchievementPanel";
 export class Achievement {
   name!: string;
   description!: string;
   done!: boolean;
   checkCondition!: any;
+  fresh!: boolean;
 
   constructor(
     name: string,
@@ -19,18 +22,23 @@ export class Achievement {
 
   async finished(
     context: vscode.ExtensionContext,
-    achievements: Array<Achievement>
-    // statusBar: StatusBar
+    achievements: Array<Achievement>,
+    statusBar: StatusBar
   ): Promise<void> {
     this.done = true;
-    // statusBar.notify();
+    this.fresh = true;
+    statusBar.notify();
     let answer = await vscode.window.showInformationMessage(
       `✔ ${this.name}`,
       "Show Achievements"
     );
-    // if (answer === "Show Achievements") {
-    //     AchievementPanel.createOrShow(context.extensionUri, achievements, statusBar);
-    // }
+    if (answer === "Show Achievements") {
+      AchievementPanel.createOrShow(
+        context.extensionUri,
+        achievements,
+        statusBar
+      );
+    }
   }
 }
 
@@ -38,6 +46,7 @@ export class Achievement {
 export function checkForCompletion(
   achievements: Array<Achievement>,
   context: vscode.ExtensionContext,
+  statusBar: StatusBar,
   change: vscode.TextDocumentContentChangeEvent,
   doc: vscode.TextDocument
 ) {
@@ -51,10 +60,10 @@ export function checkForCompletion(
     if (achievement.name == "First steps" && change) {
       const newLines = change.text.split("\n").length - 1;
       if (achievement.checkCondition(context, newLines, GlobalChangedLines)) {
-        achievement.finished(context, achievements);
+        achievement.finished(context, achievements, statusBar);
       }
     } else if (achievement.checkCondition(change, line)) {
-      achievement.finished(context, achievements);
+      achievement.finished(context, achievements, statusBar);
     }
   });
   // Update the keys
@@ -67,24 +76,6 @@ let achievements = [
     false,
     () => {
       // TODO: set to true
-      return false;
-    }
-  ),
-  new Achievement(
-    "First steps",
-    "10000 lines written",
-    false,
-    (
-      context: vscode.ExtensionContext,
-      newLines: number,
-      GlobalChangedLines: number
-    ) => {
-      if (newLines > 0) {
-        GlobalChangedLines += newLines;
-        // save newLines to extension state
-        context.globalState.update("changedLines", GlobalChangedLines);
-        return GlobalChangedLines > 10000;
-      }
       return false;
     }
   ),
@@ -111,7 +102,7 @@ let achievements = [
     "Write a recursive function",
     false,
     () => {
-      return false;
+      return true;
     }
   ),
   new Achievement(
@@ -204,14 +195,14 @@ let achievements = [
     }
   ),
   // TODO:
-  new Achievement(
-    "Documentation Dynamo",
-    "Write clear, concise documentation for your project.",
-    false,
-    () => {
-      return false;
-    }
-  ),
+  // new Achievement(
+  //   "Documentation Dynamo",
+  //   "Write clear, concise documentation for your project.",
+  //   false,
+  //   () => {
+  //     return false;
+  //   }
+  // ),
   // TODO:
   // new Achievement(
   //   "Code Minimization Guru",
@@ -238,11 +229,10 @@ let achievements = [
     }
   ),
   new Achievement(
-    "But Why??? You have my condolences",
+    "Bit by Bit",
     "Bit manipulation operator used",
     false,
     (change: vscode.TextDocumentContentChangeEvent, line: string) => {
-      const line = line;
       const expressions = [" & ", " | ", "^", "~", "<<", ">>"];
       return expressions.some((exp) => {
         if (line.includes(exp)) {
@@ -257,6 +247,24 @@ let achievements = [
     false,
     (change: vscode.TextDocumentContentChangeEvent, line: string) => {
       return line.includes("Math.random(");
+    }
+  ),
+  new Achievement(
+    "Line by Line",
+    "10000 lines written",
+    false,
+    (
+      context: vscode.ExtensionContext,
+      newLines: number,
+      GlobalChangedLines: number
+    ) => {
+      if (newLines > 0) {
+        GlobalChangedLines += newLines;
+        // save newLines to extension state
+        context.globalState.update("changedLines", GlobalChangedLines);
+        return GlobalChangedLines > 10000;
+      }
+      return false;
     }
   ),
   // TODO: Harder achievements
@@ -319,7 +327,9 @@ export function getAchievements(
     return achievement;
   });
 }
-
+export function accomplishedAchievements(achievements: Array<Achievement>) {
+  return achievements.filter((achievement) => achievement.done);
+}
 export function resetAchievements(context: vscode.ExtensionContext) {
   context.globalState.update("Achievements", "");
   vscode.window.showInformationMessage("Reset Achievements");
