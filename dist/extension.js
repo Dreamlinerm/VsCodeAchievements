@@ -54,11 +54,9 @@ function activate(context) {
             vscode.window.showInformationMessage("No active text editor");
             return;
         }
-        else {
-            // console log all the text in the editor
-            const text = editor.document.getText();
-            console.log(text);
-        }
+        // console log all the text in the editor
+        const text = editor.document.getText();
+        console.log(text);
     });
     context.subscriptions.push(command, copyTextCommand);
 }
