@@ -247,6 +247,14 @@ let achievements = [
     }
   ),
   new Achievement(
+    "LambDuh!",
+    "Use a lambda function",
+    false,
+    (change: vscode.TextDocumentContentChangeEvent, line: string) => {
+      return line.match(/=.*(.*).*=>/g);
+    }
+  ),
+  new Achievement(
     "Line by Line",
     "10000 lines written",
     false,

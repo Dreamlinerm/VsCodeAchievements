@@ -230,6 +230,9 @@ let achievements = [
     new Achievement("Magic Numbers", "Using a random number", false, (change, line) => {
         return line.includes("Math.random(");
     }),
+    new Achievement("LambDuh!", "Use a lambda function", false, (change, line) => {
+        return line.match(/=.*(.*).*=>/g);
+    }),
     new Achievement("Line by Line", "10000 lines written", false, (context, newLines, GlobalChangedLines) => {
         if (newLines > 0) {
             GlobalChangedLines += newLines;
