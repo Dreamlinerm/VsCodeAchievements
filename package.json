@@ -18,6 +18,10 @@
       {
         "command": "gamify.resetAchievements",
         "title": "Reset Achievements"
+      },
+      {
+        "command": "gamify.showAchievements",
+        "title": "Show Achievements"
       }
     ]
   },

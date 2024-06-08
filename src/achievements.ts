@@ -75,8 +75,7 @@ let achievements = [
     "Thank you for downloading the Achievements extension!",
     false,
     () => {
-      // TODO: set to true
-      return false;
+      return true;
     }
   ),
   new Achievement(
@@ -97,14 +96,14 @@ let achievements = [
     }
   ),
   // TODO:
-  new Achievement(
-    "Recursive Ruler",
-    "Write a recursive function",
-    false,
-    () => {
-      return true;
-    }
-  ),
+  // new Achievement(
+  //   "Recursive Ruler",
+  //   "Write a recursive function",
+  //   false,
+  //   () => {
+  //     return true;
+  //   }
+  // ),
   new Achievement(
     "Class Novice",
     "Write your first Class",

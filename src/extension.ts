@@ -8,6 +8,7 @@ import {
   checkForCompletion,
   resetAchievements,
 } from "./achievements";
+import { AchievementPanel } from "./AchievementPanel";
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -20,7 +21,6 @@ export function activate(context: vscode.ExtensionContext) {
   );
   // Initiate StatusBar
   const statusBar = new StatusBar("Achievements", "achievements.achievements");
-
   vscode.workspace.onDidChangeTextDocument((event) => {
     event.contentChanges.forEach((change) => {
       checkForCompletion(
@@ -40,7 +40,17 @@ export function activate(context: vscode.ExtensionContext) {
       achievements = resetAchievements(context);
     }
   );
-  context.subscriptions.push(resetAchievementsCommand);
+  let showAchievementsCommand = vscode.commands.registerCommand(
+    "gamify.showAchievements",
+    () => {
+      AchievementPanel.createOrShow(
+        context.extensionUri,
+        achievements,
+        statusBar
+      );
+    }
+  );
+  context.subscriptions.push(resetAchievementsCommand, showAchievementsCommand);
 }
 
 // This method is called when your extension is deactivated

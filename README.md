@@ -13,8 +13,9 @@ Reset all achievements:
 ```json
 {
     "key": "ctrl+shift+p",
-    "command": "extension.resetAchievements"
-}
+    "commands": ["Reset Achievements","Show Achievements"]
+},
+
 ```
 
 ## Installation

@@ -35,6 +35,7 @@ exports.deactivate = exports.activate = void 0;
 const vscode = __importStar(__webpack_require__(1));
 const StatusBar_1 = __webpack_require__(3);
 const achievements_1 = __webpack_require__(2);
+const AchievementPanel_1 = __webpack_require__(4);
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 function activate(context) {
@@ -53,7 +54,10 @@ function activate(context) {
     let resetAchievementsCommand = vscode.commands.registerCommand("gamify.resetAchievements", () => {
         achievements = (0, achievements_1.resetAchievements)(context);
     });
-    context.subscriptions.push(resetAchievementsCommand);
+    let showAchievementsCommand = vscode.commands.registerCommand("gamify.showAchievements", () => {
+        AchievementPanel_1.AchievementPanel.createOrShow(context.extensionUri, achievements, statusBar);
+    });
+    context.subscriptions.push(resetAchievementsCommand, showAchievementsCommand);
 }
 exports.activate = activate;
 // This method is called when your extension is deactivated
@@ -146,8 +150,7 @@ function checkForCompletion(achievements, context, statusBar, change, doc) {
 exports.checkForCompletion = checkForCompletion;
 let achievements = [
     new Achievement("Welcome!", "Thank you for downloading the Achievements extension!", false, () => {
-        // TODO: set to true
-        return false;
+        return true;
     }),
     new Achievement("Hello World Explorer", "Write your first “Hello, World!” program in a new language.", false, (change, line) => {
         // regex line includes console.log and Hello World
@@ -157,9 +160,14 @@ let achievements = [
         return line.includes("function");
     }),
     // TODO:
-    new Achievement("Recursive Ruler", "Write a recursive function", false, () => {
-        return true;
-    }),
+    // new Achievement(
+    //   "Recursive Ruler",
+    //   "Write a recursive function",
+    //   false,
+    //   () => {
+    //     return true;
+    //   }
+    // ),
     new Achievement("Class Novice", "Write your first Class", false, (change, line) => {
         return line.includes("class");
     }),
