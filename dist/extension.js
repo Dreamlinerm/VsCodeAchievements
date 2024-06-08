@@ -490,27 +490,23 @@ class AchievementPanel {
             achievementsInText += `<p class="achievement">${a.done ? "✔️" : "❌"}&emsp;<b>${a.name}</b>${a.done ? "&emsp;-&emsp;" + a.description : ""}</p>`;
         }
         return `<!DOCTYPE html>
-			    <html lang="en">
-			    <head>
-				<meta charset="UTF-8">
-				<!--
-					Use a content security policy to only allow loading images from https or from our extension directory,
-					and only allow scripts that have a specific nonce.
-                -->
-                <meta http-equiv="Content-Security-Policy" content="img-src https: data:; style-src 'unsafe-inline' ${webview.cspSource};">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-			    </head>
-                <body>
-                    <h1 align="center" id="heading">Achievements</h1>
-                    <hr>
-                    <br><br>
-                    <div class="achievements">${achievementsInText}</div>
-                    <p class="accomplishedAchievements">
-                    
-                    <a class="count✔️">${(0, achievements_1.accomplishedAchievements)(achievements).length}</a>/<a class="countAll">${achievements.length}</a>
-                    </p>
-                </body>
-			    </html>`;
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+  <h1 align="center" id="heading">Achievements</h1>
+  <hr>
+  <br><br>
+  <div class="achievements">${achievementsInText}</div>
+  <p class="accomplishedAchievements">
+
+    <a class="count✔️">${(0, achievements_1.accomplishedAchievements)(achievements).length}</a>/<a class="countAll">${achievements.length}</a>
+  </p>
+</body>
+
+</html>`;
     }
 }
 exports.AchievementPanel = AchievementPanel;
