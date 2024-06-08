@@ -39,6 +39,9 @@ function activate(context) {
     // Use the console to output diagnostic information (console.log) and errors (console.error)
     // This line of code will only be executed once when your extension is activated
     console.log("Gamify Plugin is activated");
+    const startTime = new Date();
+    // lastTime the hour changed
+    let lastHour = 0;
     let GlobalChangedLines = parseInt(context.globalState.get("changedLines") ?? "0");
     let achievements = context.globalState.get("achievements") ?? {
         "1000LinesChanged": false,
@@ -58,6 +61,19 @@ function activate(context) {
                 if (Math.floor((localChangedLines + newLines) / 100) !==
                     Math.floor(localChangedLines / 100)) {
                     vscode.window.showInformationMessage(`100 lines written🎉`);
+                }
+                // every hour of coding
+                const currentTime = new Date();
+                const timeDiff = Math.abs(currentTime.getTime() - startTime.getTime());
+                const hours = Math.floor(timeDiff / 3600000);
+                if (hours > lastHour) {
+                    if (hours === 4) {
+                        vscode.window.showInformationMessage(`Maybe take a break after 4 hours of coding?`);
+                    }
+                    else {
+                        vscode.window.showInformationMessage(`${hours} hour(s) of coding🎉`);
+                    }
+                    lastHour = hours;
                 }
                 //--------------     Achievements     ----------------
                 if (localChangedLines + newLines > 1000) {
