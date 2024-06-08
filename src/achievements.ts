@@ -44,6 +44,7 @@ export function checkForCompletion(
   let GlobalChangedLines = parseInt(
     context.globalState.get("changedLines") ?? "0"
   );
+  const line = doc.lineAt(change.range.start.line).text;
   achievements.forEach((achievement) => {
     // If the condition is true and the achievement isn't done
     if (achievement.done) return;
@@ -52,7 +53,7 @@ export function checkForCompletion(
       if (achievement.checkCondition(context, newLines, GlobalChangedLines)) {
         achievement.finished(context, achievements);
       }
-    } else if (achievement.checkCondition(change, doc)) {
+    } else if (achievement.checkCondition(change, line)) {
       achievement.finished(context, achievements);
     }
   });
@@ -91,18 +92,20 @@ let achievements = [
     "Hello World Explorer",
     "Write your first “Hello, World!” program in a new language.",
     false,
-    (
-      change: vscode.TextDocumentContentChangeEvent,
-      doc: vscode.TextDocument
-    ) => {
+    (change: vscode.TextDocumentContentChangeEvent, line: string) => {
       // regex line includes console.log and Hello World
-      const line = doc.lineAt(change.range.start.line).text;
-      return line.match(/console\.log\(.*Hello.* World.*\)/) !== null;
+      return line.match(/console\.log\(.*Hello.* World.*\)/g) !== null;
     }
   ),
-  new Achievement("Function Novice", "Write your first Function", false, () => {
-    return false;
-  }),
+  new Achievement(
+    "Function Novice",
+    "Write your first Function",
+    false,
+    (change: vscode.TextDocumentContentChangeEvent, line: string) => {
+      return line.includes("function");
+    }
+  ),
+  // TODO:
   new Achievement(
     "Recursive Ruler",
     "Write a recursive function",
@@ -111,74 +114,96 @@ let achievements = [
       return false;
     }
   ),
-  new Achievement("Class Novice", "Write your first Class", false, () => {
-    return false;
-  }),
   new Achievement(
-    "Kartograph",
+    "Class Novice",
+    "Write your first Class",
+    false,
+    (change: vscode.TextDocumentContentChangeEvent, line: string) => {
+      return line.includes("class");
+    }
+  ),
+  new Achievement(
+    "Cartograph",
     "Use the first map data type in your code",
     false,
-    () => {
-      return false;
+    (change: vscode.TextDocumentContentChangeEvent, line: string) => {
+      return line.includes("new Map(");
     }
   ),
   new Achievement(
-    "Mapper",
+    "Map reduced",
     "Use the first map function in your code",
     false,
-    () => {
-      return false;
+    (change: vscode.TextDocumentContentChangeEvent, line: string) => {
+      return line.includes(".map(");
     }
   ),
   new Achievement(
-    "Filterer",
+    "Filter Fanatic",
     "Use the first filter function in your code",
     false,
-    () => {
-      return false;
+    (change: vscode.TextDocumentContentChangeEvent, line: string) => {
+      return line.includes(".filter(");
     }
   ),
   new Achievement(
-    "Reducer",
+    "Don't reduce, reuse!",
     "Use the first reduce function in your code",
     false,
-    () => {
-      return false;
+    (change: vscode.TextDocumentContentChangeEvent, line: string) => {
+      return line.includes(".reduce(");
     }
   ),
-  new Achievement("Regex Sorcerer", "Write complex regex", false, () => {
-    return false;
-  }),
   new Achievement(
-    "Why pack when you can unpack?",
-    "Unpack a variable",
+    "Regex Sorcerer",
+    "Write complex regex, which is longer than 9 characters",
     false,
-    () => {
-      return false;
+    (change: vscode.TextDocumentContentChangeEvent, line: string) => {
+      // use complicated regex
+      return line.match(/new RegExp\(..{10,}.\)/g) !== null;
+    }
+  ),
+  new Achievement(
+    "Spread the Joy",
+    "Unpack a variable with ...",
+    false,
+    (change: vscode.TextDocumentContentChangeEvent, line: string) => {
+      return line.includes("...");
     }
   ),
   new Achievement(
     "String Splitter",
     "Split a string into an array of substrings",
     false,
-    () => {
-      return false;
+    (change: vscode.TextDocumentContentChangeEvent, line: string) => {
+      return line.includes(".split(");
     }
   ),
   new Achievement(
     "Parallel Universe",
     "Create a asynchronous function",
     false,
-    () => {
-      return false;
+    (change: vscode.TextDocumentContentChangeEvent, line: string) => {
+      return line.includes("async");
     }
   ),
-  new Achievement("Promise Keeper", "Use a promise", false, () => {
-    return false;
-  }),
-  new Achievement("Commentator", "Commenting your code", false, () => {
-    return false;
-  }),
+  new Achievement(
+    "Promise Keeper",
+    "Use a promise",
+    false,
+    (change: vscode.TextDocumentContentChangeEvent, line: string) => {
+      return line.includes("new Promise(");
+    }
+  ),
+  new Achievement(
+    "What's your comment?",
+    "Commenting on your code",
+    false,
+    (change: vscode.TextDocumentContentChangeEvent, line: string) => {
+      return line.includes("//");
+    }
+  ),
+  // TODO:
   new Achievement(
     "Documentation Dynamo",
     "Write clear, concise documentation for your project.",
@@ -187,81 +212,94 @@ let achievements = [
       return false;
     }
   ),
+  // TODO:
+  // new Achievement(
+  //   "Code Minimization Guru",
+  //   "Minimize code length while maintaining readability.",
+  //   false,
+  //   () => {
+  //     return false;
+  //   }
+  // ),
   new Achievement(
-    "Code Minimization Guru",
-    "Minimize code length while maintaining readability.",
+    "Shorthand Master",
+    "Writing a shorthand if",
     false,
-    () => {
-      return false;
+    (change: vscode.TextDocumentContentChangeEvent, line: string) => {
+      return line.match(/.*\?.*:/g) !== null;
     }
   ),
-  new Achievement(
-    "Code Minimization Guru",
-    "Minimize code length while maintaining readability.",
-    false,
-    () => {
-      return false;
-    }
-  ),
-  new Achievement("Shorthand Master", "Writing a shorthand if", false, () => {
-    return false;
-  }),
   new Achievement(
     "Switcheroo!",
     "Using a switch instead of else if",
     false,
-    () => {
-      return false;
-    }
-  ),
-  new Achievement("But Why???", "Bit manipulation operator used", false, () => {
-    return false;
-  }),
-  new Achievement("Magic Numbers", "Using a magic number", false, () => {
-    return false;
-  }),
-
-  // TODO Harder achievements
-  new Achievement(
-    "Error Eliminator",
-    "Debug and resolve a runtime error.",
-    false,
-    () => {
-      return false;
+    (change: vscode.TextDocumentContentChangeEvent, line: string) => {
+      return line.includes("switch");
     }
   ),
   new Achievement(
-    "Optimization Expert",
-    "Optimize your code for speed and efficiency.",
+    "But Why??? You have my condolences",
+    "Bit manipulation operator used",
     false,
-    () => {
-      return false;
+    (change: vscode.TextDocumentContentChangeEvent, line: string) => {
+      const line = line;
+      const expressions = [" & ", " | ", "^", "~", "<<", ">>"];
+      return expressions.some((exp) => {
+        if (line.includes(exp)) {
+          return true;
+        }
+      });
     }
   ),
   new Achievement(
-    "Syntax Sleuth",
-    "Successfully debug a cryptic syntax error.",
+    "Magic Numbers",
+    "Using a random number",
     false,
-    () => {
-      return false;
+    (change: vscode.TextDocumentContentChangeEvent, line: string) => {
+      return line.includes("Math.random(");
     }
   ),
-  new Achievement(
-    "Version Control Virtuoso",
-    "Master Git commands and resolve merge conflicts.",
-    false,
-    () => {
-      return false;
-    }
-  ),
-  new Achievement(
-    "Refactoring Wizard",
-    "Transform spaghetti code into elegant, modular functions.",
-    false,
-    () => {
-      return false;
-    }
-  ),
+  // TODO: Harder achievements
+  // new Achievement(
+  //   "Error Eliminator",
+  //   "Debug and resolve a runtime error.",
+  //   false,
+  //   () => {
+  //     return false;
+  //   }
+  // ),
+  // new Achievement(
+  //   "Optimization Expert",
+  //   "Optimize your code for speed and efficiency.",
+  //   false,
+  //   () => {
+  //     return false;
+  //   }
+  // ),
+  // new Achievement(
+  //   "Syntax Sleuth",
+  //   "Successfully debug a cryptic syntax error.",
+  //   false,
+  //   () => {
+  //     return false;
+  //   }
+  // ),
+  // new Achievement(
+  //   "Version Control Virtuoso",
+  //   "Master Git commands and resolve merge conflicts.",
+  //   false,
+  //   () => {
+  //     return false;
+  //   }
+  // ),
+  // new Achievement(
+  //   "Refactoring Wizard",
+  //   "Transform spaghetti code into elegant, modular functions.",
+  //   false,
+  //   () => {
+  //     return false;
+  //   }
+  // ),
 ];
 
 export function getAchievements(
