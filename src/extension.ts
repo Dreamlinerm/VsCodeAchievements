@@ -11,14 +11,22 @@ export function activate(context: vscode.ExtensionContext) {
   let GlobalChangedLines = parseInt(
     context.globalState.get("changedLines") ?? "0"
   );
+  let achievements: { "1000LinesChanged": boolean } = context.globalState.get(
+    "achievements"
+  ) ?? {
+    "1000LinesChanged": false,
+  };
   let localChangedLines = 0;
   vscode.workspace.onDidChangeTextDocument((event) => {
     event.contentChanges.forEach((change) => {
       const newLines = change.text.split("\n").length - 1;
       if (newLines > 0) {
+        GlobalChangedLines += newLines;
+        // save newLines to extension state
+        context.globalState.update("changedLines", localChangedLines);
         // vscode.window.showInformationMessage(`Added ${newLines} new line(s)`);
-        //--------------     Achievement 1     ----------------
-        // 100 lines written achievement
+        //--------------     Feedback     ----------------
+        // 100 lines written
         // if changedLines+Newlines go over a multiple of 100, show a message
         if (
           Math.floor((localChangedLines + newLines) / 100) !==
@@ -26,9 +34,14 @@ export function activate(context: vscode.ExtensionContext) {
         ) {
           vscode.window.showInformationMessage(`100 lines written🎉`);
         }
-        GlobalChangedLines += newLines;
-        // save newLines to extension state
-        context.globalState.update("changedLines", localChangedLines);
+        //--------------     Achievements     ----------------
+        if (localChangedLines + newLines > 1000) {
+          vscode.window.showInformationMessage(
+            `Achievement unlocked: 1000 lines written🏆`
+          );
+          achievements["1000LinesChanged"] = true;
+          context.globalState.update("achievements", achievements);
+        }
 
         vscode.window.showInformationMessage(
           `Changed ${localChangedLines} lines`
