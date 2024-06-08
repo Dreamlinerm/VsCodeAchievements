@@ -34,6 +34,31 @@ export class Achievement {
   }
 }
 
+// Check wether an achievement is done
+export function checkForCompletion(
+  achievements: Array<Achievement>,
+  context: vscode.ExtensionContext,
+  change?: vscode.TextDocumentContentChangeEvent
+) {
+  let GlobalChangedLines = parseInt(
+    context.globalState.get("changedLines") ?? "0"
+  );
+  achievements.forEach((achievement) => {
+    // If the condition is true and the achievement isn't done
+    if (achievement.done) return;
+    if (achievement.name == "First steps" && change) {
+      const newLines = change.text.split("\n").length - 1;
+      if (achievement.checkCondition(context, newLines, GlobalChangedLines)) {
+        achievement.finished(context, achievements);
+      }
+    } else if (achievement.checkCondition(change)) {
+      achievement.finished(context, achievements);
+    }
+  });
+  // Update the keys
+  context.globalState.update("Achievements", achievements);
+}
+let localChangedLines = 0;
 export function getAchievements(
   obj?: Array<Achievement> | undefined
 ): Array<Achievement> {
@@ -46,15 +71,33 @@ export function getAchievements(
         return true;
       }
     ),
-    new Achievement("First steps", "1000 lines written", false, () => {
-      return true;
-    }),
+    new Achievement(
+      "First steps",
+      "1000 lines written",
+      false,
+      (
+        context: vscode.ExtensionContext,
+        newLines: number,
+        GlobalChangedLines: number
+      ) => {
+        if (newLines > 0) {
+          GlobalChangedLines += newLines;
+          // save newLines to extension state
+          context.globalState.update("changedLines", GlobalChangedLines);
+          vscode.window.showInformationMessage(
+            `You have written ${GlobalChangedLines} lines of code🎉`
+          );
+          return GlobalChangedLines > 100;
+        }
+        return false;
+      }
+    ),
     new Achievement(
       "Hello World Explorer",
       "Write your first “Hello, World!” program in a new language.",
       false,
       () => {
-        return true;
+        return false;
       }
     ),
     new Achievement(
@@ -62,7 +105,7 @@ export function getAchievements(
       "Write your first Function",
       false,
       () => {
-        return true;
+        return false;
       }
     ),
     new Achievement(
@@ -70,18 +113,18 @@ export function getAchievements(
       "Write a recursive function",
       false,
       () => {
-        return true;
+        return false;
       }
     ),
     new Achievement("Class Novice", "Write your first Class", false, () => {
-      return true;
+      return false;
     }),
     new Achievement(
       "Kartograph",
       "Use the first map data type in your code",
       false,
       () => {
-        return true;
+        return false;
       }
     ),
     new Achievement(
@@ -89,7 +132,7 @@ export function getAchievements(
       "Use the first map function in your code",
       false,
       () => {
-        return true;
+        return false;
       }
     ),
     new Achievement(
@@ -97,7 +140,7 @@ export function getAchievements(
       "Use the first filter function in your code",
       false,
       () => {
-        return true;
+        return false;
       }
     ),
     new Achievement(
@@ -105,18 +148,18 @@ export function getAchievements(
       "Use the first reduce function in your code",
       false,
       () => {
-        return true;
+        return false;
       }
     ),
     new Achievement("Regex Sorcerer", "Write complex regex", false, () => {
-      return true;
+      return false;
     }),
     new Achievement(
       "Why pack when you can unpack?",
       "Unpack a variable",
       false,
       () => {
-        return true;
+        return false;
       }
     ),
     new Achievement(
@@ -124,7 +167,7 @@ export function getAchievements(
       "Split a string into an array of substrings",
       false,
       () => {
-        return true;
+        return false;
       }
     ),
     new Achievement(
@@ -132,21 +175,21 @@ export function getAchievements(
       "Create a asynchronous function",
       false,
       () => {
-        return true;
+        return false;
       }
     ),
     new Achievement("Promise Keeper", "Use a promise", false, () => {
-      return true;
+      return false;
     }),
     new Achievement("Commentator", "Commenting your code", false, () => {
-      return true;
+      return false;
     }),
     new Achievement(
       "Documentation Dynamo",
       "Write clear, concise documentation for your project.",
       false,
       () => {
-        return true;
+        return false;
       }
     ),
     new Achievement(
@@ -154,7 +197,7 @@ export function getAchievements(
       "Minimize code length while maintaining readability.",
       false,
       () => {
-        return true;
+        return false;
       }
     ),
     new Achievement(
@@ -162,18 +205,18 @@ export function getAchievements(
       "Minimize code length while maintaining readability.",
       false,
       () => {
-        return true;
+        return false;
       }
     ),
     new Achievement("Shorthand Master", "Writing a shorthand if", false, () => {
-      return true;
+      return false;
     }),
     new Achievement(
       "Switcheroo!",
       "Using a switch instead of else if",
       false,
       () => {
-        return true;
+        return false;
       }
     ),
     new Achievement(
@@ -181,11 +224,11 @@ export function getAchievements(
       "Bit manipulation operator used",
       false,
       () => {
-        return true;
+        return false;
       }
     ),
     new Achievement("Magic Numbers", "Using a magic number", false, () => {
-      return true;
+      return false;
     }),
 
     // TODO Harder achievements
@@ -194,7 +237,7 @@ export function getAchievements(
       "Debug and resolve a runtime error.",
       false,
       () => {
-        return true;
+        return false;
       }
     ),
     new Achievement(
@@ -202,7 +245,7 @@ export function getAchievements(
       "Optimize your code for speed and efficiency.",
       false,
       () => {
-        return true;
+        return false;
       }
     ),
     new Achievement(
@@ -210,7 +253,7 @@ export function getAchievements(
       "Successfully debug a cryptic syntax error.",
       false,
       () => {
-        return true;
+        return false;
       }
     ),
     new Achievement(
@@ -218,7 +261,7 @@ export function getAchievements(
       "Master Git commands and resolve merge conflicts.",
       false,
       () => {
-        return true;
+        return false;
       }
     ),
     new Achievement(
@@ -226,7 +269,7 @@ export function getAchievements(
       "Transform spaghetti code into elegant, modular functions.",
       false,
       () => {
-        return true;
+        return false;
       }
     ),
   ];

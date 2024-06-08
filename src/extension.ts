@@ -1,6 +1,11 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
+import {
+  Achievement,
+  getAchievements,
+  checkForCompletion,
+} from "./achievements";
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -8,64 +13,12 @@ export function activate(context: vscode.ExtensionContext) {
   // Use the console to output diagnostic information (console.log) and errors (console.error)
   // This line of code will only be executed once when your extension is activated
   console.log("Gamify Plugin is activated");
-  const startTime = new Date();
-  // lastTime the hour changed
-  let lastHour = 0;
-  let GlobalChangedLines = parseInt(
-    context.globalState.get("changedLines") ?? "0"
+  let achievements = getAchievements(
+    context.globalState.get<Array<Achievement>>("Achievements")
   );
-  let achievements: { "1000LinesChanged": boolean } = context.globalState.get(
-    "achievements"
-  ) ?? {
-    "1000LinesChanged": false,
-  };
-  let localChangedLines = 0;
   vscode.workspace.onDidChangeTextDocument((event) => {
     event.contentChanges.forEach((change) => {
-      const newLines = change.text.split("\n").length - 1;
-      if (newLines > 0) {
-        GlobalChangedLines += newLines;
-        // save newLines to extension state
-        context.globalState.update("changedLines", localChangedLines);
-        // vscode.window.showInformationMessage(`Added ${newLines} new line(s)`);
-        //--------------     Feedback     ----------------
-        // 100 lines written
-        // if changedLines+Newlines go over a multiple of 100, show a message
-        if (
-          Math.floor((localChangedLines + newLines) / 100) !==
-          Math.floor(localChangedLines / 100)
-        ) {
-          vscode.window.showInformationMessage(`100 lines written🎉`);
-        }
-        // every hour of coding
-        const currentTime = new Date();
-        const timeDiff = Math.abs(currentTime.getTime() - startTime.getTime());
-        const hours = Math.floor(timeDiff / 3600000);
-        if (hours > lastHour) {
-          if (hours === 4) {
-            vscode.window.showInformationMessage(
-              `Maybe take a break after 4 hours of coding?`
-            );
-          } else {
-            vscode.window.showInformationMessage(
-              `${hours} hour(s) of coding🎉`
-            );
-          }
-          lastHour = hours;
-        }
-        //--------------     Achievements     ----------------
-        if (localChangedLines + newLines > 1000) {
-          vscode.window.showInformationMessage(
-            `Achievement unlocked: 1000 lines written🏆`
-          );
-          achievements["1000LinesChanged"] = true;
-          context.globalState.update("achievements", achievements);
-        }
-
-        vscode.window.showInformationMessage(
-          `Changed ${localChangedLines} lines`
-        );
-      }
+      checkForCompletion(achievements, context, change);
     });
   });
 

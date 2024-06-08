@@ -33,56 +33,17 @@ exports.deactivate = exports.activate = void 0;
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 const vscode = __importStar(__webpack_require__(1));
+const achievements_1 = __webpack_require__(2);
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 function activate(context) {
     // Use the console to output diagnostic information (console.log) and errors (console.error)
     // This line of code will only be executed once when your extension is activated
     console.log("Gamify Plugin is activated");
-    const startTime = new Date();
-    // lastTime the hour changed
-    let lastHour = 0;
-    let GlobalChangedLines = parseInt(context.globalState.get("changedLines") ?? "0");
-    let achievements = context.globalState.get("achievements") ?? {
-        "1000LinesChanged": false,
-    };
-    let localChangedLines = 0;
+    let achievements = (0, achievements_1.getAchievements)(context.globalState.get("Achievements"));
     vscode.workspace.onDidChangeTextDocument((event) => {
         event.contentChanges.forEach((change) => {
-            const newLines = change.text.split("\n").length - 1;
-            if (newLines > 0) {
-                GlobalChangedLines += newLines;
-                // save newLines to extension state
-                context.globalState.update("changedLines", localChangedLines);
-                // vscode.window.showInformationMessage(`Added ${newLines} new line(s)`);
-                //--------------     Feedback     ----------------
-                // 100 lines written
-                // if changedLines+Newlines go over a multiple of 100, show a message
-                if (Math.floor((localChangedLines + newLines) / 100) !==
-                    Math.floor(localChangedLines / 100)) {
-                    vscode.window.showInformationMessage(`100 lines written🎉`);
-                }
-                // every hour of coding
-                const currentTime = new Date();
-                const timeDiff = Math.abs(currentTime.getTime() - startTime.getTime());
-                const hours = Math.floor(timeDiff / 3600000);
-                if (hours > lastHour) {
-                    if (hours === 4) {
-                        vscode.window.showInformationMessage(`Maybe take a break after 4 hours of coding?`);
-                    }
-                    else {
-                        vscode.window.showInformationMessage(`${hours} hour(s) of coding🎉`);
-                    }
-                    lastHour = hours;
-                }
-                //--------------     Achievements     ----------------
-                if (localChangedLines + newLines > 1000) {
-                    vscode.window.showInformationMessage(`Achievement unlocked: 1000 lines written🏆`);
-                    achievements["1000LinesChanged"] = true;
-                    context.globalState.update("achievements", achievements);
-                }
-                vscode.window.showInformationMessage(`Changed ${localChangedLines} lines`);
-            }
+            (0, achievements_1.checkForCompletion)(achievements, context, change);
         });
     });
     // The command has been defined in the package.json file
@@ -117,6 +78,193 @@ exports.deactivate = deactivate;
 /***/ ((module) => {
 
 module.exports = require("vscode");
+
+/***/ }),
+/* 2 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getAchievements = exports.checkForCompletion = exports.Achievement = void 0;
+const vscode = __importStar(__webpack_require__(1));
+class Achievement {
+    name;
+    description;
+    done;
+    checkCondition;
+    constructor(name, description, done, checkCondition) {
+        this.name = name;
+        this.description = description;
+        this.done = done;
+        this.checkCondition = checkCondition;
+    }
+    async finished(context, achievements
+    // statusBar: StatusBar
+    ) {
+        this.done = true;
+        // statusBar.notify();
+        let answer = await vscode.window.showInformationMessage(`✔ ${this.name}`, "Show Achievements");
+        // if (answer === "Show Achievements") {
+        //     AchievementPanel.createOrShow(context.extensionUri, achievements, statusBar);
+        // }
+    }
+}
+exports.Achievement = Achievement;
+// Check wether an achievement is done
+function checkForCompletion(achievements, context, change) {
+    let GlobalChangedLines = parseInt(context.globalState.get("changedLines") ?? "0");
+    achievements.forEach((achievement) => {
+        // If the condition is true and the achievement isn't done
+        if (achievement.done)
+            return;
+        if (achievement.name == "First steps" && change) {
+            const newLines = change.text.split("\n").length - 1;
+            if (achievement.checkCondition(context, newLines, GlobalChangedLines)) {
+                achievement.finished(context, achievements);
+            }
+        }
+        else if (achievement.checkCondition(change)) {
+            achievement.finished(context, achievements);
+        }
+    });
+    // Update the keys
+    context.globalState.update("Achievements", achievements);
+}
+exports.checkForCompletion = checkForCompletion;
+let localChangedLines = 0;
+function getAchievements(obj) {
+    let achievements = [
+        new Achievement("Welcome!", "Thank you for downloading the Achievements extension!", false, () => {
+            return true;
+        }),
+        new Achievement("First steps", "1000 lines written", false, (context, newLines, GlobalChangedLines) => {
+            if (newLines > 0) {
+                GlobalChangedLines += newLines;
+                // save newLines to extension state
+                context.globalState.update("changedLines", GlobalChangedLines);
+                vscode.window.showInformationMessage(`You have written ${GlobalChangedLines} lines of code🎉`);
+                return GlobalChangedLines > 100;
+            }
+            return false;
+        }),
+        new Achievement("Hello World Explorer", "Write your first “Hello, World!” program in a new language.", false, () => {
+            return false;
+        }),
+        new Achievement("Function Novice", "Write your first Function", false, () => {
+            return false;
+        }),
+        new Achievement("Recursive Ruler", "Write a recursive function", false, () => {
+            return false;
+        }),
+        new Achievement("Class Novice", "Write your first Class", false, () => {
+            return false;
+        }),
+        new Achievement("Kartograph", "Use the first map data type in your code", false, () => {
+            return false;
+        }),
+        new Achievement("Mapper", "Use the first map function in your code", false, () => {
+            return false;
+        }),
+        new Achievement("Filterer", "Use the first filter function in your code", false, () => {
+            return false;
+        }),
+        new Achievement("Reducer", "Use the first reduce function in your code", false, () => {
+            return false;
+        }),
+        new Achievement("Regex Sorcerer", "Write complex regex", false, () => {
+            return false;
+        }),
+        new Achievement("Why pack when you can unpack?", "Unpack a variable", false, () => {
+            return false;
+        }),
+        new Achievement("String Splitter", "Split a string into an array of substrings", false, () => {
+            return false;
+        }),
+        new Achievement("Parallel Universe", "Create a asynchronous function", false, () => {
+            return false;
+        }),
+        new Achievement("Promise Keeper", "Use a promise", false, () => {
+            return false;
+        }),
+        new Achievement("Commentator", "Commenting your code", false, () => {
+            return false;
+        }),
+        new Achievement("Documentation Dynamo", "Write clear, concise documentation for your project.", false, () => {
+            return false;
+        }),
+        new Achievement("Code Minimization Guru", "Minimize code length while maintaining readability.", false, () => {
+            return false;
+        }),
+        new Achievement("Code Minimization Guru", "Minimize code length while maintaining readability.", false, () => {
+            return false;
+        }),
+        new Achievement("Shorthand Master", "Writing a shorthand if", false, () => {
+            return false;
+        }),
+        new Achievement("Switcheroo!", "Using a switch instead of else if", false, () => {
+            return false;
+        }),
+        new Achievement("But Why???", "Bit manipulation operator used", false, () => {
+            return false;
+        }),
+        new Achievement("Magic Numbers", "Using a magic number", false, () => {
+            return false;
+        }),
+        // TODO Harder achievements
+        new Achievement("Error Eliminator", "Debug and resolve a runtime error.", false, () => {
+            return false;
+        }),
+        new Achievement("Optimization Expert", "Optimize your code for speed and efficiency.", false, () => {
+            return false;
+        }),
+        new Achievement("Syntax Sleuth", "Successfully debug a cryptic syntax error.", false, () => {
+            return false;
+        }),
+        new Achievement("Version Control Virtuoso", "Master Git commands and resolve merge conflicts.", false, () => {
+            return false;
+        }),
+        new Achievement("Refactoring Wizard", "Transform spaghetti code into elegant, modular functions.", false, () => {
+            return false;
+        }),
+    ];
+    // If there is no initial object declared
+    if (obj === undefined) {
+        return achievements;
+    }
+    // Set the achievements to the state they were in the save
+    achievements.forEach((achievement) => {
+        let item = obj.find((k) => k.name === achievement.name);
+        if (item !== undefined) {
+            achievement.done = item.done;
+        }
+    });
+    return achievements;
+}
+exports.getAchievements = getAchievements;
+
 
 /***/ })
 /******/ 	]);
