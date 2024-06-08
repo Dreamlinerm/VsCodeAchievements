@@ -3,9 +3,19 @@
 ## Features
 
 So there are two ways you can use this extension:
-1. Just coding like you are used to and sometimes get a little notification, that you accomplished an achievement due to some action.
+1. Code and if you do something unusual or something that is not common, you will get an achievement.
 
 2. Hunt the achievements and try to get them all.
+
+## Commands
+
+Reset all achievements:
+```json
+{
+    "key": "ctrl+shift+p",
+    "command": "extension.resetAchievements"
+}
+```
 
 ## Installation
 
