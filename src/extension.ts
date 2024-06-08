@@ -7,7 +7,35 @@ import * as vscode from "vscode";
 export function activate(context: vscode.ExtensionContext) {
   // Use the console to output diagnostic information (console.log) and errors (console.error)
   // This line of code will only be executed once when your extension is activated
-  console.log('Congratulations, your extension "gamify" is now active!');
+  console.log("Gamify Plugin is activated");
+  let GlobalChangedLines = parseInt(
+    context.globalState.get("changedLines") ?? "0"
+  );
+  let localChangedLines = 0;
+  vscode.workspace.onDidChangeTextDocument((event) => {
+    event.contentChanges.forEach((change) => {
+      const newLines = change.text.split("\n").length - 1;
+      if (newLines > 0) {
+        // vscode.window.showInformationMessage(`Added ${newLines} new line(s)`);
+        //--------------     Achievement 1     ----------------
+        // 100 lines written achievement
+        // if changedLines+Newlines go over a multiple of 100, show a message
+        if (
+          Math.floor((localChangedLines + newLines) / 100) !==
+          Math.floor(localChangedLines / 100)
+        ) {
+          vscode.window.showInformationMessage(`100 lines written🎉`);
+        }
+        GlobalChangedLines += newLines;
+        // save newLines to extension state
+        context.globalState.update("changedLines", localChangedLines);
+
+        vscode.window.showInformationMessage(
+          `Changed ${localChangedLines} lines`
+        );
+      }
+    });
+  });
 
   // The command has been defined in the package.json file
   // Now provide the implementation of the command with registerCommand
