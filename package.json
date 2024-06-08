@@ -16,6 +16,10 @@
       {
         "command": "gamify.helloWorld",
         "title": "Hello World"
+      },
+      {
+        "command": "gamify.copyText",
+        "title": "copyText"
       }
     ]
   },

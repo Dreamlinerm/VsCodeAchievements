@@ -42,12 +42,25 @@ function activate(context) {
     // The command has been defined in the package.json file
     // Now provide the implementation of the command with registerCommand
     // The commandId parameter must match the command field in package.json
-    const disposable = vscode.commands.registerCommand('gamify.helloWorld', () => {
+    const command = vscode.commands.registerCommand("gamify.helloWorld", () => {
         // The code you place here will be executed every time your command is executed
         // Display a message box to the user
-        vscode.window.showInformationMessage('Hello World from Gamify!');
+        vscode.window.showInformationMessage("Hello World from Gamify!");
     });
-    context.subscriptions.push(disposable);
+    let copyTextCommand = vscode.commands.registerCommand("gamify.copyText", () => {
+        vscode.window.showInformationMessage("Copy Text");
+        const editor = vscode.window.activeTextEditor;
+        if (!editor) {
+            vscode.window.showInformationMessage("No active text editor");
+            return;
+        }
+        else {
+            // console log all the text in the editor
+            const text = editor.document.getText();
+            console.log(text);
+        }
+    });
+    context.subscriptions.push(command, copyTextCommand);
 }
 exports.activate = activate;
 // This method is called when your extension is deactivated
