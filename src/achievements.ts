@@ -27,7 +27,7 @@ export class Achievement {
     this.done = true;
     statusBar.notify();
     let answer = await vscode.window.showInformationMessage(
-      `✔ ${this.name}`,
+      `✅🏆 ${this.name}`,
       "Show Achievements"
     );
     if (answer === "Show Achievements") {

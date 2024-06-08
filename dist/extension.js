@@ -117,7 +117,7 @@ class Achievement {
     async finished(context, achievements, statusBar) {
         this.done = true;
         statusBar.notify();
-        let answer = await vscode.window.showInformationMessage(`✔ ${this.name}`, "Show Achievements");
+        let answer = await vscode.window.showInformationMessage(`✅🏆 ${this.name}`, "Show Achievements");
         if (answer === "Show Achievements") {
             AchievementPanel_1.AchievementPanel.createOrShow(context.extensionUri, achievements, statusBar);
         }
