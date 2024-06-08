@@ -16,12 +16,8 @@
   "contributes": {
     "commands": [
       {
-        "command": "gamify.helloWorld",
-        "title": "Hello World"
-      },
-      {
-        "command": "gamify.copyText",
-        "title": "copyText"
+        "command": "gamify.resetAchievements",
+        "title": "Reset Achievements"
       }
     ]
   },

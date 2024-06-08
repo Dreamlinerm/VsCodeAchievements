@@ -58,232 +58,228 @@ export function checkForCompletion(
   // Update the keys
   context.globalState.update("Achievements", achievements);
 }
-let localChangedLines = 0;
+let achievements = [
+  new Achievement(
+    "Welcome!",
+    "Thank you for downloading the Achievements extension!",
+    false,
+    () => {
+      return false;
+    }
+  ),
+  new Achievement(
+    "First steps",
+    "1000 lines written",
+    false,
+    (
+      context: vscode.ExtensionContext,
+      newLines: number,
+      GlobalChangedLines: number
+    ) => {
+      if (newLines > 0) {
+        GlobalChangedLines += newLines;
+        // save newLines to extension state
+        context.globalState.update("changedLines", GlobalChangedLines);
+        return GlobalChangedLines > 1000;
+      }
+      return false;
+    }
+  ),
+  new Achievement(
+    "Hello World Explorer",
+    "Write your first “Hello, World!” program in a new language.",
+    false,
+    () => {
+      return false;
+    }
+  ),
+  new Achievement("Function Novice", "Write your first Function", false, () => {
+    return false;
+  }),
+  new Achievement(
+    "Recursive Ruler",
+    "Write a recursive function",
+    false,
+    () => {
+      return false;
+    }
+  ),
+  new Achievement("Class Novice", "Write your first Class", false, () => {
+    return false;
+  }),
+  new Achievement(
+    "Kartograph",
+    "Use the first map data type in your code",
+    false,
+    () => {
+      return false;
+    }
+  ),
+  new Achievement(
+    "Mapper",
+    "Use the first map function in your code",
+    false,
+    () => {
+      return false;
+    }
+  ),
+  new Achievement(
+    "Filterer",
+    "Use the first filter function in your code",
+    false,
+    () => {
+      return false;
+    }
+  ),
+  new Achievement(
+    "Reducer",
+    "Use the first reduce function in your code",
+    false,
+    () => {
+      return false;
+    }
+  ),
+  new Achievement("Regex Sorcerer", "Write complex regex", false, () => {
+    return false;
+  }),
+  new Achievement(
+    "Why pack when you can unpack?",
+    "Unpack a variable",
+    false,
+    () => {
+      return false;
+    }
+  ),
+  new Achievement(
+    "String Splitter",
+    "Split a string into an array of substrings",
+    false,
+    () => {
+      return false;
+    }
+  ),
+  new Achievement(
+    "Parallel Universe",
+    "Create a asynchronous function",
+    false,
+    () => {
+      return false;
+    }
+  ),
+  new Achievement("Promise Keeper", "Use a promise", false, () => {
+    return false;
+  }),
+  new Achievement("Commentator", "Commenting your code", false, () => {
+    return false;
+  }),
+  new Achievement(
+    "Documentation Dynamo",
+    "Write clear, concise documentation for your project.",
+    false,
+    () => {
+      return false;
+    }
+  ),
+  new Achievement(
+    "Code Minimization Guru",
+    "Minimize code length while maintaining readability.",
+    false,
+    () => {
+      return false;
+    }
+  ),
+  new Achievement(
+    "Code Minimization Guru",
+    "Minimize code length while maintaining readability.",
+    false,
+    () => {
+      return false;
+    }
+  ),
+  new Achievement("Shorthand Master", "Writing a shorthand if", false, () => {
+    return false;
+  }),
+  new Achievement(
+    "Switcheroo!",
+    "Using a switch instead of else if",
+    false,
+    () => {
+      return false;
+    }
+  ),
+  new Achievement("But Why???", "Bit manipulation operator used", false, () => {
+    return false;
+  }),
+  new Achievement("Magic Numbers", "Using a magic number", false, () => {
+    return false;
+  }),
+
+  // TODO Harder achievements
+  new Achievement(
+    "Error Eliminator",
+    "Debug and resolve a runtime error.",
+    false,
+    () => {
+      return false;
+    }
+  ),
+  new Achievement(
+    "Optimization Expert",
+    "Optimize your code for speed and efficiency.",
+    false,
+    () => {
+      return false;
+    }
+  ),
+  new Achievement(
+    "Syntax Sleuth",
+    "Successfully debug a cryptic syntax error.",
+    false,
+    () => {
+      return false;
+    }
+  ),
+  new Achievement(
+    "Version Control Virtuoso",
+    "Master Git commands and resolve merge conflicts.",
+    false,
+    () => {
+      return false;
+    }
+  ),
+  new Achievement(
+    "Refactoring Wizard",
+    "Transform spaghetti code into elegant, modular functions.",
+    false,
+    () => {
+      return false;
+    }
+  ),
+];
+
 export function getAchievements(
   obj?: Array<Achievement> | undefined
 ): Array<Achievement> {
-  let achievements = [
-    new Achievement(
-      "Welcome!",
-      "Thank you for downloading the Achievements extension!",
-      false,
-      () => {
-        return true;
-      }
-    ),
-    new Achievement(
-      "First steps",
-      "1000 lines written",
-      false,
-      (
-        context: vscode.ExtensionContext,
-        newLines: number,
-        GlobalChangedLines: number
-      ) => {
-        if (newLines > 0) {
-          GlobalChangedLines += newLines;
-          // save newLines to extension state
-          context.globalState.update("changedLines", GlobalChangedLines);
-          vscode.window.showInformationMessage(
-            `You have written ${GlobalChangedLines} lines of code🎉`
-          );
-          return GlobalChangedLines > 100;
-        }
-        return false;
-      }
-    ),
-    new Achievement(
-      "Hello World Explorer",
-      "Write your first “Hello, World!” program in a new language.",
-      false,
-      () => {
-        return false;
-      }
-    ),
-    new Achievement(
-      "Function Novice",
-      "Write your first Function",
-      false,
-      () => {
-        return false;
-      }
-    ),
-    new Achievement(
-      "Recursive Ruler",
-      "Write a recursive function",
-      false,
-      () => {
-        return false;
-      }
-    ),
-    new Achievement("Class Novice", "Write your first Class", false, () => {
-      return false;
-    }),
-    new Achievement(
-      "Kartograph",
-      "Use the first map data type in your code",
-      false,
-      () => {
-        return false;
-      }
-    ),
-    new Achievement(
-      "Mapper",
-      "Use the first map function in your code",
-      false,
-      () => {
-        return false;
-      }
-    ),
-    new Achievement(
-      "Filterer",
-      "Use the first filter function in your code",
-      false,
-      () => {
-        return false;
-      }
-    ),
-    new Achievement(
-      "Reducer",
-      "Use the first reduce function in your code",
-      false,
-      () => {
-        return false;
-      }
-    ),
-    new Achievement("Regex Sorcerer", "Write complex regex", false, () => {
-      return false;
-    }),
-    new Achievement(
-      "Why pack when you can unpack?",
-      "Unpack a variable",
-      false,
-      () => {
-        return false;
-      }
-    ),
-    new Achievement(
-      "String Splitter",
-      "Split a string into an array of substrings",
-      false,
-      () => {
-        return false;
-      }
-    ),
-    new Achievement(
-      "Parallel Universe",
-      "Create a asynchronous function",
-      false,
-      () => {
-        return false;
-      }
-    ),
-    new Achievement("Promise Keeper", "Use a promise", false, () => {
-      return false;
-    }),
-    new Achievement("Commentator", "Commenting your code", false, () => {
-      return false;
-    }),
-    new Achievement(
-      "Documentation Dynamo",
-      "Write clear, concise documentation for your project.",
-      false,
-      () => {
-        return false;
-      }
-    ),
-    new Achievement(
-      "Code Minimization Guru",
-      "Minimize code length while maintaining readability.",
-      false,
-      () => {
-        return false;
-      }
-    ),
-    new Achievement(
-      "Code Minimization Guru",
-      "Minimize code length while maintaining readability.",
-      false,
-      () => {
-        return false;
-      }
-    ),
-    new Achievement("Shorthand Master", "Writing a shorthand if", false, () => {
-      return false;
-    }),
-    new Achievement(
-      "Switcheroo!",
-      "Using a switch instead of else if",
-      false,
-      () => {
-        return false;
-      }
-    ),
-    new Achievement(
-      "But Why???",
-      "Bit manipulation operator used",
-      false,
-      () => {
-        return false;
-      }
-    ),
-    new Achievement("Magic Numbers", "Using a magic number", false, () => {
-      return false;
-    }),
-
-    // TODO Harder achievements
-    new Achievement(
-      "Error Eliminator",
-      "Debug and resolve a runtime error.",
-      false,
-      () => {
-        return false;
-      }
-    ),
-    new Achievement(
-      "Optimization Expert",
-      "Optimize your code for speed and efficiency.",
-      false,
-      () => {
-        return false;
-      }
-    ),
-    new Achievement(
-      "Syntax Sleuth",
-      "Successfully debug a cryptic syntax error.",
-      false,
-      () => {
-        return false;
-      }
-    ),
-    new Achievement(
-      "Version Control Virtuoso",
-      "Master Git commands and resolve merge conflicts.",
-      false,
-      () => {
-        return false;
-      }
-    ),
-    new Achievement(
-      "Refactoring Wizard",
-      "Transform spaghetti code into elegant, modular functions.",
-      false,
-      () => {
-        return false;
-      }
-    ),
-  ];
   // If there is no initial object declared
-  if (obj === undefined) {
+  if (!obj) {
     return achievements;
   }
 
   // Set the achievements to the state they were in the save
-  achievements.forEach((achievement) => {
+  return achievements.map((achievement) => {
     let item = obj.find((k) => k.name === achievement.name);
     if (item !== undefined) {
       achievement.done = item.done;
     }
+    return achievement;
   });
-  return achievements;
+}
+
+export function resetAchievements(context: vscode.ExtensionContext) {
+  context.globalState.update("Achievements", "");
+  vscode.window.showInformationMessage("Reset Achievements");
+  return achievements.map((achievement) => {
+    achievement.done = false;
+    return achievement;
+  });
 }

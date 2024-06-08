@@ -5,6 +5,7 @@ import {
   Achievement,
   getAchievements,
   checkForCompletion,
+  resetAchievements,
 } from "./achievements";
 
 // This method is called when your extension is activated
@@ -23,28 +24,13 @@ export function activate(context: vscode.ExtensionContext) {
   });
 
   // The command has been defined in the package.json file
-  // Now provide the implementation of the command with registerCommand
-  // The commandId parameter must match the command field in package.json
-  const command = vscode.commands.registerCommand("gamify.helloWorld", () => {
-    // The code you place here will be executed every time your command is executed
-    // Display a message box to the user
-    vscode.window.showInformationMessage("Hello World from Gamify!");
-  });
-  let copyTextCommand = vscode.commands.registerCommand(
-    "gamify.copyText",
+  let resetAchievementsCommand = vscode.commands.registerCommand(
+    "gamify.resetAchievements",
     () => {
-      vscode.window.showInformationMessage("Copy Text");
-      const editor = vscode.window.activeTextEditor;
-      if (!editor) {
-        vscode.window.showInformationMessage("No active text editor");
-        return;
-      }
-      // console log all the text in the editor
-      const text = editor.document.getText();
-      console.log(text);
+      achievements = resetAchievements(context);
     }
   );
-  context.subscriptions.push(command, copyTextCommand);
+  context.subscriptions.push(resetAchievementsCommand);
 }
 
 // This method is called when your extension is deactivated
