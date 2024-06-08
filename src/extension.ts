@@ -19,7 +19,7 @@ export function activate(context: vscode.ExtensionContext) {
   );
   vscode.workspace.onDidChangeTextDocument((event) => {
     event.contentChanges.forEach((change) => {
-      checkForCompletion(achievements, context, change);
+      checkForCompletion(achievements, context, change, event.document);
     });
   });
 

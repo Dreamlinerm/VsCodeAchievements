@@ -43,7 +43,7 @@ function activate(context) {
     let achievements = (0, achievements_1.getAchievements)(context.globalState.get("Achievements"));
     vscode.workspace.onDidChangeTextDocument((event) => {
         event.contentChanges.forEach((change) => {
-            (0, achievements_1.checkForCompletion)(achievements, context, change);
+            (0, achievements_1.checkForCompletion)(achievements, context, change, event.document);
         });
     });
     // The command has been defined in the package.json file
@@ -119,7 +119,7 @@ class Achievement {
 }
 exports.Achievement = Achievement;
 // Check wether an achievement is done
-function checkForCompletion(achievements, context, change) {
+function checkForCompletion(achievements, context, change, doc) {
     let GlobalChangedLines = parseInt(context.globalState.get("changedLines") ?? "0");
     achievements.forEach((achievement) => {
         // If the condition is true and the achievement isn't done
@@ -131,7 +131,7 @@ function checkForCompletion(achievements, context, change) {
                 achievement.finished(context, achievements);
             }
         }
-        else if (achievement.checkCondition(change)) {
+        else if (achievement.checkCondition(change, doc)) {
             achievement.finished(context, achievements);
         }
     });
@@ -141,6 +141,7 @@ function checkForCompletion(achievements, context, change) {
 exports.checkForCompletion = checkForCompletion;
 let achievements = [
     new Achievement("Welcome!", "Thank you for downloading the Achievements extension!", false, () => {
+        // TODO: set to true
         return false;
     }),
     new Achievement("First steps", "1000 lines written", false, (context, newLines, GlobalChangedLines) => {
@@ -152,8 +153,10 @@ let achievements = [
         }
         return false;
     }),
-    new Achievement("Hello World Explorer", "Write your first “Hello, World!” program in a new language.", false, () => {
-        return false;
+    new Achievement("Hello World Explorer", "Write your first “Hello, World!” program in a new language.", false, (change, doc) => {
+        // regex line includes console.log and Hello World
+        const line = doc.lineAt(change.range.start.line).text;
+        return line.match(/console\.log\(.*Hello.* World.*\)/) !== null;
     }),
     new Achievement("Function Novice", "Write your first Function", false, () => {
         return false;

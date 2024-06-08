@@ -38,7 +38,8 @@ export class Achievement {
 export function checkForCompletion(
   achievements: Array<Achievement>,
   context: vscode.ExtensionContext,
-  change?: vscode.TextDocumentContentChangeEvent
+  change: vscode.TextDocumentContentChangeEvent,
+  doc: vscode.TextDocument
 ) {
   let GlobalChangedLines = parseInt(
     context.globalState.get("changedLines") ?? "0"
@@ -51,7 +52,7 @@ export function checkForCompletion(
       if (achievement.checkCondition(context, newLines, GlobalChangedLines)) {
         achievement.finished(context, achievements);
       }
-    } else if (achievement.checkCondition(change)) {
+    } else if (achievement.checkCondition(change, doc)) {
       achievement.finished(context, achievements);
     }
   });
@@ -64,6 +65,7 @@ let achievements = [
     "Thank you for downloading the Achievements extension!",
     false,
     () => {
+      // TODO: set to true
       return false;
     }
   ),
@@ -89,8 +91,13 @@ let achievements = [
     "Hello World Explorer",
     "Write your first “Hello, World!” program in a new language.",
     false,
-    () => {
-      return false;
+    (
+      change: vscode.TextDocumentContentChangeEvent,
+      doc: vscode.TextDocument
+    ) => {
+      // regex line includes console.log and Hello World
+      const line = doc.lineAt(change.range.start.line).text;
+      return line.match(/console\.log\(.*Hello.* World.*\)/) !== null;
     }
   ),
   new Achievement("Function Novice", "Write your first Function", false, () => {
