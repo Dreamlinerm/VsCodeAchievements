@@ -72,7 +72,7 @@ let achievements = [
   ),
   new Achievement(
     "First steps",
-    "1000 lines written",
+    "10000 lines written",
     false,
     (
       context: vscode.ExtensionContext,
@@ -83,7 +83,7 @@ let achievements = [
         GlobalChangedLines += newLines;
         // save newLines to extension state
         context.globalState.update("changedLines", GlobalChangedLines);
-        return GlobalChangedLines > 1000;
+        return GlobalChangedLines > 10000;
       }
       return false;
     }
