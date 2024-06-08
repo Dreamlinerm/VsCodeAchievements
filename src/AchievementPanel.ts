@@ -2,16 +2,6 @@ import * as vscode from "vscode";
 import { Achievement, accomplishedAchievements } from "./achievements";
 import { StatusBar } from "./StatusBar";
 
-function getNonce() {
-  let text = "";
-  const possible =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  for (let i = 0; i < 32; i++) {
-    text += possible.charAt(Math.floor(Math.random() * possible.length));
-  }
-  return text;
-}
-
 export class AchievementPanel {
   /**
    * Track the currently panel. Only allow a single panel to exist at a time.
@@ -99,19 +89,6 @@ export class AchievementPanel {
     // Listen for when the panel is disposed
     // This happens when the user closes the panel or when the panel is closed programatically
     this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
-
-    // // Handle messages from the webview
-    // this._panel.webview.onDidReceiveMessage(
-    //   (message) => {
-    //     switch (message.command) {
-    //       case "alert":
-    //         vscode.window.showErrorMessage(message.text);
-    //         return;
-    //     }
-    //   },
-    //   null,
-    //   this._disposables
-    // );
   }
 
   public dispose() {
@@ -156,61 +133,14 @@ export class AchievementPanel {
     webview: vscode.Webview,
     achievements: Array<Achievement>
   ) {
-    // // // And the uri we use to load this script in the webview
-    // const scriptUri = webview.asWebviewUri(
-    //     vscode.Uri.joinPath(this._extensionUri, "out", "compiled/swiper.js")
-    // );
-
-    // Local path to css styles
-    const styleResetPath = vscode.Uri.joinPath(
-      this._extensionUri,
-      "media",
-      "reset.css"
-    );
-    const stylesPathMainPath = vscode.Uri.joinPath(
-      this._extensionUri,
-      "media",
-      "vscode.css"
-    );
-
-    const style = vscode.Uri.joinPath(this._extensionUri, "media", "style.css");
-
-    const script = vscode.Uri.joinPath(
-      this._extensionUri,
-      "media",
-      "script.js"
-    );
-
-    const styleUri = webview.asWebviewUri(style);
-    const stylesResetUri = webview.asWebviewUri(styleResetPath);
-    const stylesMainUri = webview.asWebviewUri(stylesPathMainPath);
-    const scriptUri = webview.asWebviewUri(script);
-
-    const nonce = getNonce();
-
     let achievementsInText = "";
-    let explosion = `<div class="firework">
-                        <div class="explode"></div>
-                        <div class="explode"></div>
-                        <div class="explode"></div>
-                        <div class="explode"></div>
-                        <div class="explode"></div>
-                        <div class="explode"></div>
-                        <div class="explode"></div>
-                        <div class="explode"></div>
-                        <div class="explode"></div>
-                        <div class="explode"></div>
-                        <div class="explode"></div>
-                        <div class="explode"></div>
-                        </div>`;
-    for (let i = 0; i < achievements.length; i++) {
-      let a = achievements[i];
+    for (const element of achievements) {
+      let a = element;
       achievementsInText += `<p class="achievement">${
-        a.fresh ? explosion : ""
-      }${a.done ? "✔️" : "❌"}&emsp;<b>${a.name}</b>${
+        a.done ? "✔️" : "❌"
+      }&emsp;<b>${a.name}</b>${
         a.done ? "&emsp;-&emsp;" + a.description : ""
-      }</p><br>`;
-      achievements[i].fresh = false;
+      }</p>`;
     }
 
     return `<!DOCTYPE html>
@@ -223,13 +153,8 @@ export class AchievementPanel {
                 -->
                 <meta http-equiv="Content-Security-Policy" content="img-src https: data:; style-src 'unsafe-inline' ${
                   webview.cspSource
-                }; script-src 'nonce-${nonce}';">
-                <link rel="stylesheet" href="${styleUri}">
-                <link rel="stylesheet" href="${stylesResetUri}">
-                <link rel="stylesheet" href="${stylesMainUri}">
+                };">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <script nonce="${nonce}">
-                </script>
 			    </head>
                 <body>
                     <h1 align="center" id="heading">Achievements</h1>
@@ -243,9 +168,6 @@ export class AchievementPanel {
                     }</a>/<a class="countAll">${achievements.length}</a>
                     </p>
                 </body>
-                <footer id="footer" align="center">If you want to support me, you can <a href="https://www.buymeacoffee.com/Tchibo">buy me a coffee</a> ☕ <br></footer>
-                <script src="${scriptUri}" nonce="${nonce}">
-                </script>
 			    </html>`;
   }
 }

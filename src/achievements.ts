@@ -6,7 +6,6 @@ export class Achievement {
   description!: string;
   done!: boolean;
   checkCondition!: any;
-  fresh!: boolean;
 
   constructor(
     name: string,
@@ -26,7 +25,6 @@ export class Achievement {
     statusBar: StatusBar
   ): Promise<void> {
     this.done = true;
-    this.fresh = true;
     statusBar.notify();
     let answer = await vscode.window.showInformationMessage(
       `✔ ${this.name}`,
@@ -194,14 +192,14 @@ let achievements = [
     }
   ),
   // TODO:
-  // new Achievement(
-  //   "Documentation Dynamo",
-  //   "Write clear, concise documentation for your project.",
-  //   false,
-  //   () => {
-  //     return false;
-  //   }
-  // ),
+  new Achievement(
+    "Documentation Dynamo",
+    "Write a JSDoc comment",
+    false,
+    (change: vscode.TextDocumentContentChangeEvent, line: string) => {
+      return line.includes("@param") || line.includes("@returns");
+    }
+  ),
   // TODO:
   // new Achievement(
   //   "Code Minimization Guru",

@@ -1,4 +1,4 @@
-# Code Achievements
+# Javascript/Typescript Code Achievements
 
 ## Features
 
