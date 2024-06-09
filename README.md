@@ -1,4 +1,4 @@
-# Javascript/Typescript Code Achievements
+# Code Achievements
 
 ## Features
 
@@ -6,6 +6,13 @@ So there are two ways you can use this extension:
 1. Code and if you do something unusual or something that is not common, you will get an achievement.
 
 2. Hunt the achievements and try to get them all.
+
+## Language Support
+
+- [x] JavaScript
+- [x] TypeScript
+- [x] HTML
+- [x] Python 
 
 ## Commands
 

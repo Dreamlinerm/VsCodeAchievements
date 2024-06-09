@@ -127,7 +127,12 @@ export class AchievementPanel {
     achievements: Array<Achievement>
   ) {
     let achievementsInText = "";
+    let lastFileTypes = "";
     for (const a of achievements) {
+      if (a.fileTypeCategory != lastFileTypes) {
+        lastFileTypes = a.fileTypeCategory;
+        achievementsInText += `<h4>Language Types: ${a.fileTypeCategory}</h4>`;
+      }
       achievementsInText += `<p class="achievement">
       ${a.done ? "✔️" : "❌"}&emsp;<b>${a.name}</b>
       ${a.done ? "&emsp;-&emsp;" + a.description : ""}</p>`;
@@ -140,15 +145,13 @@ export class AchievementPanel {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
-  <h1 align="center" id="heading">Achievements</h1>
+  <h1 align="center">Achievements</h1>
   <hr>
   <br><br>
-  <div class="achievements">${achievementsInText}</div>
-  <p class="accomplishedAchievements">
-
-    <a class="count✔️">${
-      accomplishedAchievements(achievements).length
-    }</a>/<a class="countAll">${achievements.length}</a>
+  <div>${achievementsInText}</div>
+  <p>
+    <a>${accomplishedAchievements(achievements).length}</a>/
+    <a class="countAll">${achievements.length}</a>
   </p>
 </body>
 

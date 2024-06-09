@@ -5,6 +5,7 @@ export class Achievement {
   description!: string;
   done!: boolean;
   fileTypes!: Array<string>;
+  fileTypeCategory!: string;
   checkCondition!: any;
 
   constructor(
@@ -12,13 +13,15 @@ export class Achievement {
     description: string,
     done: boolean,
     fileTypes: Array<string>,
-    checkCondition: any
+    checkCondition: any,
+    fileTypeCategory?: string
   ) {
     this.name = name;
     this.description = description;
     this.done = done;
     this.fileTypes = fileTypes;
     this.checkCondition = checkCondition;
+    this.fileTypeCategory = fileTypeCategory ?? fileTypes.join(", ");
   }
 
   async finished(
@@ -80,7 +83,8 @@ let achievements = [
     [...allJavaScript, ...allHTML],
     () => {
       return true;
-    }
+    },
+    "All supported"
   ),
   new Achievement(
     "Hello World Explorer",
@@ -89,7 +93,8 @@ let achievements = [
     [...allJavaScript, ...allHTML, "python"],
     (line: string) => {
       return line.match(/.*Hello.* World.*\)/g) !== null;
-    }
+    },
+    "All supported"
   ),
   new Achievement(
     "Function Novice",
@@ -99,7 +104,8 @@ let achievements = [
     (line: string, fileType: string) => {
       if (fileType === "python") return line.includes("def");
       else return line.includes("function");
-    }
+    },
+    "All supported"
   ),
   new Achievement(
     "Class Novice",
@@ -108,7 +114,8 @@ let achievements = [
     [...allJavaScript, "python"],
     (line: string) => {
       return line.includes("class");
-    }
+    },
+    "All supported"
   ),
   new Achievement(
     "Filter Fanatic",
@@ -117,7 +124,8 @@ let achievements = [
     [...allJavaScript, "python"],
     (line: string) => {
       return line.includes("map(");
-    }
+    },
+    "All supported"
   ),
   new Achievement(
     "Filter Fanatic",
@@ -126,7 +134,8 @@ let achievements = [
     [...allJavaScript, "python"],
     (line: string) => {
       return line.includes("filter(");
-    }
+    },
+    "All supported"
   ),
   new Achievement(
     "Map reduced",
@@ -135,7 +144,8 @@ let achievements = [
     [...allJavaScript, "python"],
     (line: string) => {
       return line.includes(".reduce(");
-    }
+    },
+    "All supported"
   ),
   new Achievement(
     "Regex Sorcerer",
@@ -147,7 +157,8 @@ let achievements = [
       if (fileType === "python")
         return line.match(/re.*\(..{10,}.\)/g) !== null;
       else return line.match(/new RegExp\(..{10,}.\)/g) !== null;
-    }
+    },
+    "All supported"
   ),
   new Achievement(
     "String Splitter",
@@ -156,7 +167,8 @@ let achievements = [
     [...allJavaScript, "python"],
     (line: string, fileType: string) => {
       return line.includes(".split(");
-    }
+    },
+    "All supported"
   ),
   new Achievement(
     "What's your comment?",
@@ -167,7 +179,8 @@ let achievements = [
       if (allJavaScript.includes(fileType)) return line.includes("//");
       else if (fileType === "python") return line.includes("#");
       else return line.includes("<!--");
-    }
+    },
+    "All supported"
   ),
   new Achievement(
     "Shorthand Master",
@@ -178,7 +191,8 @@ let achievements = [
       if (fileType === "python")
         return line.includes("if") && line.includes("else");
       else return line.match(/.*\?.*:/g) !== null;
-    }
+    },
+    "All supported"
   ),
   new Achievement(
     "Switcheroo!",
@@ -188,7 +202,8 @@ let achievements = [
     (line: string, fileType: string) => {
       if (fileType === "python") return line.includes("case");
       else return line.includes("switch");
-    }
+    },
+    "All supported"
   ),
   new Achievement(
     "Bit by Bit",
@@ -199,7 +214,8 @@ let achievements = [
       return [" & ", " | ", "^", "~", "<<", ">>"].some((exp) => {
         if (line.includes(exp)) return true;
       });
-    }
+    },
+    "All supported"
   ),
   new Achievement(
     "Magic Numbers",
@@ -209,7 +225,8 @@ let achievements = [
     (line: string, fileType: string) => {
       if (fileType === "python") return line.includes("random");
       else return line.includes("Math.random(");
-    }
+    },
+    "All supported"
   ),
   new Achievement(
     "LambDuh!",
@@ -219,7 +236,8 @@ let achievements = [
     (line: string, fileType: string) => {
       if (fileType === "python") return line.includes("lambda");
       else return line.match(/=.*\(.*\).*=>/g);
-    }
+    },
+    "All supported"
   ),
   new Achievement(
     "Line by Line",
@@ -238,7 +256,8 @@ let achievements = [
         return GlobalChangedLines > 10000;
       }
       return false;
-    }
+    },
+    "All supported"
   ),
   // TODO: Harder achievements to implement
   // new Achievement(

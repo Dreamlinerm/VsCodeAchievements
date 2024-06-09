@@ -33,8 +33,8 @@ exports.deactivate = exports.activate = void 0;
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 const vscode = __importStar(__webpack_require__(1));
-const achievements_1 = __webpack_require__(3);
-const AchievementPanel_1 = __webpack_require__(4);
+const achievements_1 = __webpack_require__(2);
+const AchievementPanel_1 = __webpack_require__(3);
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 function activate(context) {
@@ -69,8 +69,7 @@ exports.deactivate = deactivate;
 module.exports = require("vscode");
 
 /***/ }),
-/* 2 */,
-/* 3 */
+/* 2 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -100,19 +99,21 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.resetAchievements = exports.accomplishedAchievements = exports.getAchievements = exports.checkForCompletion = exports.Achievement = void 0;
 const vscode = __importStar(__webpack_require__(1));
-const AchievementPanel_1 = __webpack_require__(4);
+const AchievementPanel_1 = __webpack_require__(3);
 class Achievement {
     name;
     description;
     done;
     fileTypes;
+    fileTypeCategory;
     checkCondition;
-    constructor(name, description, done, fileTypes, checkCondition) {
+    constructor(name, description, done, fileTypes, checkCondition, fileTypeCategory) {
         this.name = name;
         this.description = description;
         this.done = done;
         this.fileTypes = fileTypes;
         this.checkCondition = checkCondition;
+        this.fileTypeCategory = fileTypeCategory ?? fileTypes.join(", ");
     }
     async finished(context, achievements) {
         this.done = true;
@@ -158,38 +159,38 @@ const allHTML = ["html", "vue"];
 let achievements = [
     new Achievement("Welcome!", "Thank you for downloading the Achievements extension!", false, [...allJavaScript, ...allHTML], () => {
         return true;
-    }),
+    }, "All supported"),
     new Achievement("Hello World Explorer", "Write your first “Hello, World!” program in a new language.", false, [...allJavaScript, ...allHTML, "python"], (line) => {
         return line.match(/.*Hello.* World.*\)/g) !== null;
-    }),
+    }, "All supported"),
     new Achievement("Function Novice", "Write your first Function", false, [...allJavaScript, "python"], (line, fileType) => {
         if (fileType === "python")
             return line.includes("def");
         else
             return line.includes("function");
-    }),
+    }, "All supported"),
     new Achievement("Class Novice", "Write your first Class", false, [...allJavaScript, "python"], (line) => {
         return line.includes("class");
-    }),
+    }, "All supported"),
     new Achievement("Filter Fanatic", "Use the first map function in your code", false, [...allJavaScript, "python"], (line) => {
         return line.includes("map(");
-    }),
+    }, "All supported"),
     new Achievement("Filter Fanatic", "Use the first filter function in your code", false, [...allJavaScript, "python"], (line) => {
         return line.includes("filter(");
-    }),
+    }, "All supported"),
     new Achievement("Map reduced", "Use the first reduce function in your code", false, [...allJavaScript, "python"], (line) => {
         return line.includes(".reduce(");
-    }),
+    }, "All supported"),
     new Achievement("Regex Sorcerer", "Write complex regex, which is longer than 9 characters", false, [...allJavaScript, "python"], (line, fileType) => {
         // use complicated regex
         if (fileType === "python")
             return line.match(/re.*\(..{10,}.\)/g) !== null;
         else
             return line.match(/new RegExp\(..{10,}.\)/g) !== null;
-    }),
+    }, "All supported"),
     new Achievement("String Splitter", "Split a string into an array of substrings", false, [...allJavaScript, "python"], (line, fileType) => {
         return line.includes(".split(");
-    }),
+    }, "All supported"),
     new Achievement("What's your comment?", "Commenting on your code", false, [...allJavaScript, ...allHTML, "python"], (line, fileType) => {
         if (allJavaScript.includes(fileType))
             return line.includes("//");
@@ -197,37 +198,37 @@ let achievements = [
             return line.includes("#");
         else
             return line.includes("<!--");
-    }),
+    }, "All supported"),
     new Achievement("Shorthand Master", "Writing a shorthand if", false, [...allJavaScript, "python"], (line, fileType) => {
         if (fileType === "python")
             return line.includes("if") && line.includes("else");
         else
             return line.match(/.*\?.*:/g) !== null;
-    }),
+    }, "All supported"),
     new Achievement("Switcheroo!", "Using a switch instead of else if", false, [...allJavaScript, "python"], (line, fileType) => {
         if (fileType === "python")
             return line.includes("case");
         else
             return line.includes("switch");
-    }),
+    }, "All supported"),
     new Achievement("Bit by Bit", "Bit manipulation operator used", false, [...allJavaScript, "python"], (line) => {
         return [" & ", " | ", "^", "~", "<<", ">>"].some((exp) => {
             if (line.includes(exp))
                 return true;
         });
-    }),
+    }, "All supported"),
     new Achievement("Magic Numbers", "Using a random number", false, [...allJavaScript, "python"], (line, fileType) => {
         if (fileType === "python")
             return line.includes("random");
         else
             return line.includes("Math.random(");
-    }),
+    }, "All supported"),
     new Achievement("LambDuh!", "Use a lambda function", false, [...allJavaScript, "python"], (line, fileType) => {
         if (fileType === "python")
             return line.includes("lambda");
         else
             return line.match(/=.*\(.*\).*=>/g);
-    }),
+    }, "All supported"),
     new Achievement("Line by Line", "10000 lines written", false, [...allJavaScript, ...allHTML, "python"], (context, newLines, GlobalChangedLines) => {
         if (newLines > 0) {
             GlobalChangedLines += newLines;
@@ -236,7 +237,7 @@ let achievements = [
             return GlobalChangedLines > 10000;
         }
         return false;
-    }),
+    }, "All supported"),
     // TODO: Harder achievements to implement
     // new Achievement(
     //   "Code Minimization Guru",
@@ -376,7 +377,7 @@ exports.resetAchievements = resetAchievements;
 
 
 /***/ }),
-/* 4 */
+/* 3 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 
@@ -406,7 +407,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.AchievementPanel = void 0;
 const vscode = __importStar(__webpack_require__(1));
-const achievements_1 = __webpack_require__(3);
+const achievements_1 = __webpack_require__(2);
 class AchievementPanel {
     /**
      * Track the currently panel. Only allow a single panel to exist at a time.
@@ -489,7 +490,12 @@ class AchievementPanel {
     }
     _getHtmlForWebview(webview, achievements) {
         let achievementsInText = "";
+        let lastFileTypes = "";
         for (const a of achievements) {
+            if (a.fileTypeCategory != lastFileTypes) {
+                lastFileTypes = a.fileTypeCategory;
+                achievementsInText += `<h4>Language Types: ${a.fileTypeCategory}</h4>`;
+            }
             achievementsInText += `<p class="achievement">
       ${a.done ? "✔️" : "❌"}&emsp;<b>${a.name}</b>
       ${a.done ? "&emsp;-&emsp;" + a.description : ""}</p>`;
@@ -501,13 +507,13 @@ class AchievementPanel {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
-  <h1 align="center" id="heading">Achievements</h1>
+  <h1 align="center">Achievements</h1>
   <hr>
   <br><br>
-  <div class="achievements">${achievementsInText}</div>
-  <p class="accomplishedAchievements">
-
-    <a class="count✔️">${(0, achievements_1.accomplishedAchievements)(achievements).length}</a>/<a class="countAll">${achievements.length}</a>
+  <div>${achievementsInText}</div>
+  <p>
+    <a>${(0, achievements_1.accomplishedAchievements)(achievements).length}</a>/
+    <a class="countAll">${achievements.length}</a>
   </p>
 </body>
 
