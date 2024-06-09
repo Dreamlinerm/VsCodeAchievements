@@ -33,7 +33,6 @@ exports.deactivate = exports.activate = void 0;
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 const vscode = __importStar(__webpack_require__(1));
-const StatusBar_1 = __webpack_require__(2);
 const achievements_1 = __webpack_require__(3);
 const AchievementPanel_1 = __webpack_require__(4);
 // This method is called when your extension is activated
@@ -43,11 +42,9 @@ function activate(context) {
     // This line of code will only be executed once when your extension is activated
     console.log("Gamify Plugin is activated");
     let achievements = (0, achievements_1.getAchievements)(context.globalState.get("Achievements"));
-    // Initiate StatusBar
-    const statusBar = new StatusBar_1.StatusBar("Achievements", "achievements.achievements");
     vscode.workspace.onDidChangeTextDocument((event) => {
         event.contentChanges.forEach((change) => {
-            (0, achievements_1.checkForCompletion)(achievements, context, statusBar, event.document.languageId, change, event.document);
+            (0, achievements_1.checkForCompletion)(achievements, context, event.document.languageId, change, event.document);
         });
     });
     // The command has been defined in the package.json file
@@ -55,7 +52,7 @@ function activate(context) {
         achievements = (0, achievements_1.resetAchievements)(context);
     });
     let showAchievementsCommand = vscode.commands.registerCommand("gamify.showAchievements", () => {
-        AchievementPanel_1.AchievementPanel.createOrShow(context.extensionUri, achievements, statusBar);
+        AchievementPanel_1.AchievementPanel.createOrShow(context.extensionUri, achievements);
     });
     context.subscriptions.push(resetAchievementsCommand, showAchievementsCommand);
 }
@@ -72,65 +69,7 @@ exports.deactivate = deactivate;
 module.exports = require("vscode");
 
 /***/ }),
-/* 2 */
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
-
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.StatusBar = void 0;
-const vscode = __importStar(__webpack_require__(1));
-class StatusBar {
-    name;
-    bar;
-    constructor(name, command) {
-        this.name = name;
-        this.bar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right);
-        this.bar.text = this.name;
-        this.bar.command = command;
-        this.bar.show();
-    }
-    // Update the status of the bar
-    update(val1, val2) {
-        if (val1 === val2) {
-            this.bar.text = `✔ ${this.name}`;
-        }
-        else {
-            this.bar.text = `${this.name} ${val1}/${val2}`;
-        }
-        this.bar.show;
-    }
-    // "Notify" the user about the new achievement
-    notify() {
-        this.bar.text = `❗ ${this.name}`;
-    }
-}
-exports.StatusBar = StatusBar;
-
-
-/***/ }),
+/* 2 */,
 /* 3 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
@@ -175,18 +114,17 @@ class Achievement {
         this.fileTypes = fileTypes;
         this.checkCondition = checkCondition;
     }
-    async finished(context, achievements, statusBar) {
+    async finished(context, achievements) {
         this.done = true;
-        statusBar.notify();
         let answer = await vscode.window.showInformationMessage(`✅🏆 ${this.name}`, "Show Achievements");
         if (answer === "Show Achievements") {
-            AchievementPanel_1.AchievementPanel.createOrShow(context.extensionUri, achievements, statusBar);
+            AchievementPanel_1.AchievementPanel.createOrShow(context.extensionUri, achievements);
         }
     }
 }
 exports.Achievement = Achievement;
 // Check wether an achievement is done
-function checkForCompletion(achievements, context, statusBar, fileType, change, doc) {
+function checkForCompletion(achievements, context, fileType, change, doc) {
     let GlobalChangedLines = parseInt(context.globalState.get("changedLines") ?? "0");
     const line = doc.lineAt(change.range.start.line).text;
     achievements.forEach((achievement) => {
@@ -198,11 +136,11 @@ function checkForCompletion(achievements, context, statusBar, fileType, change, 
         if (achievement.name === "First steps" && change) {
             const newLines = change.text.split("\n").length - 1;
             if (achievement.checkCondition(context, newLines, GlobalChangedLines)) {
-                achievement.finished(context, achievements, statusBar);
+                achievement.finished(context, achievements);
             }
         }
-        else if (achievement.checkCondition(change, line, fileType)) {
-            achievement.finished(context, achievements, statusBar);
+        else if (achievement.checkCondition(line, fileType)) {
+            achievement.finished(context, achievements);
         }
     });
     // Update the keys
@@ -221,41 +159,38 @@ let achievements = [
     new Achievement("Welcome!", "Thank you for downloading the Achievements extension!", false, [...allJavaScript, ...allHTML], () => {
         return true;
     }),
-    new Achievement("Hello World Explorer", "Write your first “Hello, World!” program in a new language.", false, [...allJavaScript, ...allHTML, "python"], (change, line) => {
+    new Achievement("Hello World Explorer", "Write your first “Hello, World!” program in a new language.", false, [...allJavaScript, ...allHTML, "python"], (line) => {
         return line.match(/.*Hello.* World.*\)/g) !== null;
     }),
-    new Achievement("Function Novice", "Write your first Function", false, [...allJavaScript, "python"], (change, line, fileType) => {
+    new Achievement("Function Novice", "Write your first Function", false, [...allJavaScript, "python"], (line, fileType) => {
         if (fileType === "python")
             return line.includes("def");
         else
             return line.includes("function");
     }),
-    new Achievement("Class Novice", "Write your first Class", false, [...allJavaScript, "python"], (change, line) => {
+    new Achievement("Class Novice", "Write your first Class", false, [...allJavaScript, "python"], (line) => {
         return line.includes("class");
     }),
-    new Achievement("Filter Fanatic", "Use the first map function in your code", false, [...allJavaScript, "python"], (change, line) => {
+    new Achievement("Filter Fanatic", "Use the first map function in your code", false, [...allJavaScript, "python"], (line) => {
         return line.includes("map(");
     }),
-    new Achievement("Filter Fanatic", "Use the first filter function in your code", false, [...allJavaScript, "python"], (change, line) => {
+    new Achievement("Filter Fanatic", "Use the first filter function in your code", false, [...allJavaScript, "python"], (line) => {
         return line.includes("filter(");
     }),
-    new Achievement("Map reduced", "Use the first reduce function in your code", false, [...allJavaScript, "python"], (change, line) => {
+    new Achievement("Map reduced", "Use the first reduce function in your code", false, [...allJavaScript, "python"], (line) => {
         return line.includes(".reduce(");
     }),
-    new Achievement("Regex Sorcerer", "Write complex regex, which is longer than 9 characters", false, [...allJavaScript, "python"], (change, line, fileType) => {
+    new Achievement("Regex Sorcerer", "Write complex regex, which is longer than 9 characters", false, [...allJavaScript, "python"], (line, fileType) => {
         // use complicated regex
         if (fileType === "python")
             return line.match(/re.*\(..{10,}.\)/g) !== null;
         else
             return line.match(/new RegExp\(..{10,}.\)/g) !== null;
     }),
-    new Achievement("String Splitter", "Split a string into an array of substrings", false, [...allJavaScript, "python"], (change, line, fileType) => {
-        if (fileType === "python")
-            return line.includes(".split(");
-        else
-            return line.includes(".split(");
+    new Achievement("String Splitter", "Split a string into an array of substrings", false, [...allJavaScript, "python"], (line, fileType) => {
+        return line.includes(".split(");
     }),
-    new Achievement("What's your comment?", "Commenting on your code", false, [...allJavaScript, ...allHTML, "python"], (change, line, fileType) => {
+    new Achievement("What's your comment?", "Commenting on your code", false, [...allJavaScript, ...allHTML, "python"], (line, fileType) => {
         if (allJavaScript.includes(fileType))
             return line.includes("//");
         else if (fileType === "python")
@@ -263,31 +198,31 @@ let achievements = [
         else
             return line.includes("<!--");
     }),
-    new Achievement("Shorthand Master", "Writing a shorthand if", false, [...allJavaScript, "python"], (change, line, fileType) => {
+    new Achievement("Shorthand Master", "Writing a shorthand if", false, [...allJavaScript, "python"], (line, fileType) => {
         if (fileType === "python")
             return line.includes("if") && line.includes("else");
         else
             return line.match(/.*\?.*:/g) !== null;
     }),
-    new Achievement("Switcheroo!", "Using a switch instead of else if", false, [...allJavaScript, "python"], (change, line, fileType) => {
+    new Achievement("Switcheroo!", "Using a switch instead of else if", false, [...allJavaScript, "python"], (line, fileType) => {
         if (fileType === "python")
             return line.includes("case");
         else
             return line.includes("switch");
     }),
-    new Achievement("Bit by Bit", "Bit manipulation operator used", false, [...allJavaScript, "python"], (change, line) => {
+    new Achievement("Bit by Bit", "Bit manipulation operator used", false, [...allJavaScript, "python"], (line) => {
         return [" & ", " | ", "^", "~", "<<", ">>"].some((exp) => {
             if (line.includes(exp))
                 return true;
         });
     }),
-    new Achievement("Magic Numbers", "Using a random number", false, [...allJavaScript, "python"], (change, line, fileType) => {
+    new Achievement("Magic Numbers", "Using a random number", false, [...allJavaScript, "python"], (line, fileType) => {
         if (fileType === "python")
             return line.includes("random");
         else
             return line.includes("Math.random(");
     }),
-    new Achievement("LambDuh!", "Use a lambda function", false, [...allJavaScript, "python"], (change, line, fileType) => {
+    new Achievement("LambDuh!", "Use a lambda function", false, [...allJavaScript, "python"], (line, fileType) => {
         if (fileType === "python")
             return line.includes("lambda");
         else
@@ -368,48 +303,45 @@ let achievements = [
     //   }
     // ),
     // JavaScript Achievements
-    new Achievement("Cartograph", "Use the first map data type in your code", false, allJavaScript, (change, line) => {
+    new Achievement("Cartograph", "Use the first map data type in your code", false, allJavaScript, (line) => {
         return line.includes("new Map(");
     }),
-    new Achievement("Spread the Joy", "Unpack a variable with ...", false, allJavaScript, (change, line) => {
+    new Achievement("Spread the Joy", "Unpack a variable with ...", false, allJavaScript, (line) => {
         return line.includes("...");
     }),
-    new Achievement("Parallel Universe", "Create a asynchronous function", false, allJavaScript, (change, line) => {
+    new Achievement("Parallel Universe", "Create a asynchronous function", false, allJavaScript, (line) => {
         return line.includes("async");
     }),
-    new Achievement("Promise Keeper", "Use a promise", false, allJavaScript, (change, line) => {
+    new Achievement("Promise Keeper", "Use a promise", false, allJavaScript, (line) => {
         return line.includes("new Promise(");
     }),
-    new Achievement("Documentation Dynamo", "Write a JSDoc comment", false, allJavaScript, (change, line) => {
+    new Achievement("Documentation Dynamo", "Write a JSDoc comment", false, allJavaScript, (line) => {
         return line.includes("@param") || line.includes("@returns");
     }),
     // HTML Achievements
     new Achievement("HTML Hero", "Write your first HTML program", false, allHTML, () => {
         return true;
     }),
-    new Achievement("Tag Customizer", "Create a custom HTML tag", false, allHTML, (change, line) => {
+    new Achievement("Tag Customizer", "Create a custom HTML tag", false, allHTML, (line) => {
         return line.match(/<.*[^-]-[^-].*>/g) !== null;
     }),
-    new Achievement("Pixel Picasso", "Show an image or svg", false, allHTML, (change, line) => {
+    new Achievement("Pixel Picasso", "Show an image or svg", false, allHTML, (line) => {
         return line.includes("<img") || line.includes("<svg");
     }),
-    new Achievement("The missing link", "Create a hyperlink", false, allHTML, (change, line) => {
+    new Achievement("The missing link", "Create a hyperlink", false, allHTML, (line) => {
         return line.includes("<a");
     }),
-    new Achievement("List Lover", "Create a list", false, allHTML, (change, line) => {
+    new Achievement("List Lover", "Create a list", false, allHTML, (line) => {
         return line.includes("<ul") || line.includes("<ol");
     }),
-    new Achievement("Table Turner", "Create a table", false, allHTML, (change, line) => {
+    new Achievement("Table Turner", "Create a table", false, allHTML, (line) => {
         return line.includes("<table");
     }),
-    new Achievement("", "", false, allHTML, (change, line) => {
-        return;
-    }),
-    new Achievement("Frame it!", "Include an iframe", false, allHTML, (change, line) => {
+    new Achievement("Frame it!", "Include an iframe", false, allHTML, (line) => {
         return line.includes("<iframe");
     }),
     // python
-    new Achievement("Pythonic", "Write your first Python program", false, ["python"], (change, line) => {
+    new Achievement("Pythonic", "Write your first Python program", false, ["python"], (line) => {
         return true;
     }),
 ];
@@ -484,8 +416,7 @@ class AchievementPanel {
     _panel;
     _extensionUri;
     _disposables = [];
-    static createOrShow(extensionUri, achievements, statusBar) {
-        statusBar.update((0, achievements_1.accomplishedAchievements)(achievements).length, achievements.length);
+    static createOrShow(extensionUri, achievements) {
         const column = vscode.window.activeTextEditor
             ? vscode.window.activeTextEditor.viewColumn
             : undefined;
@@ -558,9 +489,10 @@ class AchievementPanel {
     }
     _getHtmlForWebview(webview, achievements) {
         let achievementsInText = "";
-        for (const element of achievements) {
-            let a = element;
-            achievementsInText += `<p class="achievement">${a.done ? "✔️" : "❌"}&emsp;<b>${a.name}</b>${a.done ? "&emsp;-&emsp;" + a.description : ""}</p>`;
+        for (const a of achievements) {
+            achievementsInText += `<p class="achievement">
+      ${a.done ? "✔️" : "❌"}&emsp;<b>${a.name}</b>
+      ${a.done ? "&emsp;-&emsp;" + a.description : ""}</p>`;
         }
         return `<!DOCTYPE html>
 <html lang="en">

@@ -1,5 +1,4 @@
 import * as vscode from "vscode";
-import { StatusBar } from "./StatusBar";
 import { AchievementPanel } from "./AchievementPanel";
 export class Achievement {
   name!: string;
@@ -24,21 +23,15 @@ export class Achievement {
 
   async finished(
     context: vscode.ExtensionContext,
-    achievements: Array<Achievement>,
-    statusBar: StatusBar
+    achievements: Array<Achievement>
   ): Promise<void> {
     this.done = true;
-    statusBar.notify();
     let answer = await vscode.window.showInformationMessage(
       `✅🏆 ${this.name}`,
       "Show Achievements"
     );
     if (answer === "Show Achievements") {
-      AchievementPanel.createOrShow(
-        context.extensionUri,
-        achievements,
-        statusBar
-      );
+      AchievementPanel.createOrShow(context.extensionUri, achievements);
     }
   }
 }
@@ -47,7 +40,6 @@ export class Achievement {
 export function checkForCompletion(
   achievements: Array<Achievement>,
   context: vscode.ExtensionContext,
-  statusBar: StatusBar,
   fileType: string,
   change: vscode.TextDocumentContentChangeEvent,
   doc: vscode.TextDocument
@@ -63,10 +55,10 @@ export function checkForCompletion(
     if (achievement.name === "First steps" && change) {
       const newLines = change.text.split("\n").length - 1;
       if (achievement.checkCondition(context, newLines, GlobalChangedLines)) {
-        achievement.finished(context, achievements, statusBar);
+        achievement.finished(context, achievements);
       }
     } else if (achievement.checkCondition(line, fileType)) {
-      achievement.finished(context, achievements, statusBar);
+      achievement.finished(context, achievements);
     }
   });
   // Update the keys

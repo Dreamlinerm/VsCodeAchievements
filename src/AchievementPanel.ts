@@ -1,6 +1,5 @@
 import * as vscode from "vscode";
 import { Achievement, accomplishedAchievements } from "./achievements";
-import { StatusBar } from "./StatusBar";
 
 export class AchievementPanel {
   /**
@@ -16,14 +15,8 @@ export class AchievementPanel {
 
   public static createOrShow(
     extensionUri: vscode.Uri,
-    achievements: Array<Achievement>,
-    statusBar: StatusBar
+    achievements: Array<Achievement>
   ) {
-    statusBar.update(
-      accomplishedAchievements(achievements).length,
-      achievements.length
-    );
-
     const column = vscode.window.activeTextEditor
       ? vscode.window.activeTextEditor.viewColumn
       : undefined;
@@ -134,13 +127,10 @@ export class AchievementPanel {
     achievements: Array<Achievement>
   ) {
     let achievementsInText = "";
-    for (const element of achievements) {
-      let a = element;
-      achievementsInText += `<p class="achievement">${
-        a.done ? "✔️" : "❌"
-      }&emsp;<b>${a.name}</b>${
-        a.done ? "&emsp;-&emsp;" + a.description : ""
-      }</p>`;
+    for (const a of achievements) {
+      achievementsInText += `<p class="achievement">
+      ${a.done ? "✔️" : "❌"}&emsp;<b>${a.name}</b>
+      ${a.done ? "&emsp;-&emsp;" + a.description : ""}</p>`;
     }
 
     return `<!DOCTYPE html>

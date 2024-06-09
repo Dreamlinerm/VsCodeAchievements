@@ -1,7 +1,6 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
-import { StatusBar } from "./StatusBar";
 import {
   Achievement,
   getAchievements,
@@ -19,14 +18,11 @@ export function activate(context: vscode.ExtensionContext) {
   let achievements = getAchievements(
     context.globalState.get<Array<Achievement>>("Achievements")
   );
-  // Initiate StatusBar
-  const statusBar = new StatusBar("Achievements", "achievements.achievements");
   vscode.workspace.onDidChangeTextDocument((event) => {
     event.contentChanges.forEach((change) => {
       checkForCompletion(
         achievements,
         context,
-        statusBar,
         event.document.languageId,
         change,
         event.document
@@ -44,11 +40,7 @@ export function activate(context: vscode.ExtensionContext) {
   let showAchievementsCommand = vscode.commands.registerCommand(
     "gamify.showAchievements",
     () => {
-      AchievementPanel.createOrShow(
-        context.extensionUri,
-        achievements,
-        statusBar
-      );
+      AchievementPanel.createOrShow(context.extensionUri, achievements);
     }
   );
   context.subscriptions.push(resetAchievementsCommand, showAchievementsCommand);
