@@ -55,7 +55,7 @@ export function checkForCompletion(
     // If the condition is true and the achievement isn't done
     if (achievement.done) return;
     if (!achievement.fileTypes.includes(fileType)) return;
-    if (achievement.name === "First steps" && change) {
+    if (achievement.name === "Line by Line" && change) {
       const newLines = change.text.split("\n").length - 1;
       if (achievement.checkCondition(context, newLines, GlobalChangedLines)) {
         achievement.finished(context, achievements);
@@ -92,7 +92,7 @@ let achievements = [
     false,
     [...allJavaScript, ...allHTML, "python"],
     (line: string) => {
-      return line.match(/.*Hello.* World.*\)/g) !== null;
+      return line.match(/.*Hello.* World.*/g) !== null;
     },
     "All supported"
   ),
@@ -118,7 +118,7 @@ let achievements = [
     "All supported"
   ),
   new Achievement(
-    "Filter Fanatic",
+    "Mapper",
     "Use the first map function in your code",
     false,
     [...allJavaScript, "python"],
@@ -261,12 +261,17 @@ let achievements = [
   ),
   new Achievement(
     "Except for that...",
-    "write try catch/except block",
+    "Write try catch/except block",
     false,
     [...allJavaScript, "python"],
-    (context: vscode.ExtensionContext, line: string, fileType: string) => {
-      if (fileType === "python") return line.includes("except");
-      else return line.includes("catch");
+    (line: string, fileType: string) => {
+      if (fileType === "python") {
+        vscode.window.showInformationMessage("ATry Catch/Except:" + line);
+        return line.includes("except");
+      } else {
+        vscode.window.showInformationMessage("BTry Catch/Except:" + line);
+        return line.includes("catch");
+      }
     },
     "All supported"
   ),

@@ -134,7 +134,7 @@ function checkForCompletion(achievements, context, fileType, change, doc) {
             return;
         if (!achievement.fileTypes.includes(fileType))
             return;
-        if (achievement.name === "First steps" && change) {
+        if (achievement.name === "Line by Line" && change) {
             const newLines = change.text.split("\n").length - 1;
             if (achievement.checkCondition(context, newLines, GlobalChangedLines)) {
                 achievement.finished(context, achievements);
@@ -161,7 +161,7 @@ let achievements = [
         return true;
     }, "All supported"),
     new Achievement("Hello World Explorer", "Write your first “Hello, World!” program in a new language.", false, [...allJavaScript, ...allHTML, "python"], (line) => {
-        return line.match(/.*Hello.* World.*\)/g) !== null;
+        return line.match(/.*Hello.* World.*/g) !== null;
     }, "All supported"),
     new Achievement("Function Novice", "Write your first Function", false, [...allJavaScript, "python"], (line, fileType) => {
         if (fileType === "python")
@@ -172,7 +172,7 @@ let achievements = [
     new Achievement("Class Novice", "Write your first Class", false, [...allJavaScript, "python"], (line) => {
         return line.includes("class");
     }, "All supported"),
-    new Achievement("Filter Fanatic", "Use the first map function in your code", false, [...allJavaScript, "python"], (line) => {
+    new Achievement("Mapper", "Use the first map function in your code", false, [...allJavaScript, "python"], (line) => {
         return line.includes("map(");
     }, "All supported"),
     new Achievement("Filter Fanatic", "Use the first filter function in your code", false, [...allJavaScript, "python"], (line) => {
@@ -238,11 +238,15 @@ let achievements = [
         }
         return false;
     }, "All supported"),
-    new Achievement("Except for that...", "write try catch/except block", false, [...allJavaScript, "python"], (context, line, fileType) => {
-        if (fileType === "python")
+    new Achievement("Except for that...", "Write try catch/except block", false, [...allJavaScript, "python"], (line, fileType) => {
+        if (fileType === "python") {
+            vscode.window.showInformationMessage("ATry Catch/Except:" + line);
             return line.includes("except");
-        else
+        }
+        else {
+            vscode.window.showInformationMessage("BTry Catch/Except:" + line);
             return line.includes("catch");
+        }
     }, "All supported"),
     // TODO: Harder achievements to implement
     // new Achievement(
