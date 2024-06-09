@@ -238,6 +238,12 @@ let achievements = [
         }
         return false;
     }, "All supported"),
+    new Achievement("Except for that...", "write try catch/except block", false, [...allJavaScript, "python"], (context, line, fileType) => {
+        if (fileType === "python")
+            return line.includes("except");
+        else
+            return line.includes("catch");
+    }, "All supported"),
     // TODO: Harder achievements to implement
     // new Achievement(
     //   "Code Minimization Guru",
