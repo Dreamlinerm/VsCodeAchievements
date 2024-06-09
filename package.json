@@ -12,7 +12,11 @@
   "activationEvents": [
     "onLanguage:javascript",
     "onLanguage:typescript",
-    "onLanguage:vue"
+    "onLanguage:javascriptreact",
+    "onLanguage:typescriptreact",
+    "onLanguage:vue",
+    "onLanguage:html",
+    "onLanguage:vue-html"
   ],
   "main": "./dist/extension.js",
   "contributes": {

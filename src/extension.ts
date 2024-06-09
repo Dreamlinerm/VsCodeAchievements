@@ -27,6 +27,7 @@ export function activate(context: vscode.ExtensionContext) {
         achievements,
         context,
         statusBar,
+        event.document.languageId,
         change,
         event.document
       );

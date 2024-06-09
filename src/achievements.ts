@@ -5,17 +5,20 @@ export class Achievement {
   name!: string;
   description!: string;
   done!: boolean;
+  fileTypes!: Array<string>;
   checkCondition!: any;
 
   constructor(
     name: string,
     description: string,
     done: boolean,
+    fileTypes: Array<string>,
     checkCondition: any
   ) {
     this.name = name;
     this.description = description;
     this.done = done;
+    this.fileTypes = fileTypes;
     this.checkCondition = checkCondition;
   }
 
@@ -45,6 +48,7 @@ export function checkForCompletion(
   achievements: Array<Achievement>,
   context: vscode.ExtensionContext,
   statusBar: StatusBar,
+  fileType: string,
   change: vscode.TextDocumentContentChangeEvent,
   doc: vscode.TextDocument
 ) {
@@ -55,23 +59,33 @@ export function checkForCompletion(
   achievements.forEach((achievement) => {
     // If the condition is true and the achievement isn't done
     if (achievement.done) return;
-    if (achievement.name == "First steps" && change) {
+    if (!achievement.fileTypes.includes(fileType)) return;
+    if (achievement.name === "First steps" && change) {
       const newLines = change.text.split("\n").length - 1;
       if (achievement.checkCondition(context, newLines, GlobalChangedLines)) {
         achievement.finished(context, achievements, statusBar);
       }
-    } else if (achievement.checkCondition(change, line)) {
+    } else if (achievement.checkCondition(change, line, fileType)) {
       achievement.finished(context, achievements, statusBar);
     }
   });
   // Update the keys
   context.globalState.update("Achievements", achievements);
 }
+const allJavaScript = [
+  "javascript",
+  "javascriptreact",
+  "typescript",
+  "typescriptreact",
+  "vue",
+];
+const allHTML = ["html", "vue"];
 let achievements = [
   new Achievement(
     "Welcome!",
     "Thank you for downloading the Achievements extension!",
     false,
+    [...allJavaScript, ...allHTML],
     () => {
       return true;
     }
@@ -80,15 +94,16 @@ let achievements = [
     "Hello World Explorer",
     "Write your first “Hello, World!” program in a new language.",
     false,
+    [...allJavaScript, ...allHTML],
     (change: vscode.TextDocumentContentChangeEvent, line: string) => {
-      // regex line includes console.log and Hello World
-      return line.match(/console\.log\(.*Hello.* World.*\)/g) !== null;
+      return line.match(/.*Hello.* World.*\)/g) !== null;
     }
   ),
   new Achievement(
     "Function Novice",
     "Write your first Function",
     false,
+    allJavaScript,
     (change: vscode.TextDocumentContentChangeEvent, line: string) => {
       return line.includes("function");
     }
@@ -98,6 +113,7 @@ let achievements = [
   //   "Recursive Ruler",
   //   "Write a recursive function",
   //   false,
+  //   allJavaScript,
   //   () => {
   //     return true;
   //   }
@@ -106,6 +122,7 @@ let achievements = [
     "Class Novice",
     "Write your first Class",
     false,
+    allJavaScript,
     (change: vscode.TextDocumentContentChangeEvent, line: string) => {
       return line.includes("class");
     }
@@ -114,14 +131,16 @@ let achievements = [
     "Cartograph",
     "Use the first map data type in your code",
     false,
+    allJavaScript,
     (change: vscode.TextDocumentContentChangeEvent, line: string) => {
       return line.includes("new Map(");
     }
   ),
   new Achievement(
-    "Map reduced",
+    "Filter Fanatic",
     "Use the first map function in your code",
     false,
+    allJavaScript,
     (change: vscode.TextDocumentContentChangeEvent, line: string) => {
       return line.includes(".map(");
     }
@@ -130,14 +149,16 @@ let achievements = [
     "Filter Fanatic",
     "Use the first filter function in your code",
     false,
+    allJavaScript,
     (change: vscode.TextDocumentContentChangeEvent, line: string) => {
       return line.includes(".filter(");
     }
   ),
   new Achievement(
-    "Don't reduce, reuse!",
+    "Map reduced",
     "Use the first reduce function in your code",
     false,
+    allJavaScript,
     (change: vscode.TextDocumentContentChangeEvent, line: string) => {
       return line.includes(".reduce(");
     }
@@ -146,6 +167,7 @@ let achievements = [
     "Regex Sorcerer",
     "Write complex regex, which is longer than 9 characters",
     false,
+    allJavaScript,
     (change: vscode.TextDocumentContentChangeEvent, line: string) => {
       // use complicated regex
       return line.match(/new RegExp\(..{10,}.\)/g) !== null;
@@ -155,6 +177,7 @@ let achievements = [
     "Spread the Joy",
     "Unpack a variable with ...",
     false,
+    allJavaScript,
     (change: vscode.TextDocumentContentChangeEvent, line: string) => {
       return line.includes("...");
     }
@@ -163,6 +186,7 @@ let achievements = [
     "String Splitter",
     "Split a string into an array of substrings",
     false,
+    allJavaScript,
     (change: vscode.TextDocumentContentChangeEvent, line: string) => {
       return line.includes(".split(");
     }
@@ -171,6 +195,7 @@ let achievements = [
     "Parallel Universe",
     "Create a asynchronous function",
     false,
+    allJavaScript,
     (change: vscode.TextDocumentContentChangeEvent, line: string) => {
       return line.includes("async");
     }
@@ -179,6 +204,7 @@ let achievements = [
     "Promise Keeper",
     "Use a promise",
     false,
+    allJavaScript,
     (change: vscode.TextDocumentContentChangeEvent, line: string) => {
       return line.includes("new Promise(");
     }
@@ -187,8 +213,14 @@ let achievements = [
     "What's your comment?",
     "Commenting on your code",
     false,
-    (change: vscode.TextDocumentContentChangeEvent, line: string) => {
-      return line.includes("//");
+    [...allJavaScript, ...allHTML],
+    (
+      change: vscode.TextDocumentContentChangeEvent,
+      line: string,
+      fileType: string
+    ) => {
+      if (allJavaScript.includes(fileType)) return line.includes("//");
+      else return line.includes("<!--");
     }
   ),
   // TODO:
@@ -196,6 +228,7 @@ let achievements = [
     "Documentation Dynamo",
     "Write a JSDoc comment",
     false,
+    allJavaScript,
     (change: vscode.TextDocumentContentChangeEvent, line: string) => {
       return line.includes("@param") || line.includes("@returns");
     }
@@ -205,6 +238,7 @@ let achievements = [
   //   "Code Minimization Guru",
   //   "Minimize code length while maintaining readability.",
   //   false,
+  //   allJavaScript,
   //   () => {
   //     return false;
   //   }
@@ -213,6 +247,7 @@ let achievements = [
     "Shorthand Master",
     "Writing a shorthand if",
     false,
+    allJavaScript,
     (change: vscode.TextDocumentContentChangeEvent, line: string) => {
       return line.match(/.*\?.*:/g) !== null;
     }
@@ -221,6 +256,7 @@ let achievements = [
     "Switcheroo!",
     "Using a switch instead of else if",
     false,
+    allJavaScript,
     (change: vscode.TextDocumentContentChangeEvent, line: string) => {
       return line.includes("switch");
     }
@@ -229,6 +265,7 @@ let achievements = [
     "Bit by Bit",
     "Bit manipulation operator used",
     false,
+    allJavaScript,
     (change: vscode.TextDocumentContentChangeEvent, line: string) => {
       const expressions = [" & ", " | ", "^", "~", "<<", ">>"];
       return expressions.some((exp) => {
@@ -242,6 +279,7 @@ let achievements = [
     "Magic Numbers",
     "Using a random number",
     false,
+    allJavaScript,
     (change: vscode.TextDocumentContentChangeEvent, line: string) => {
       return line.includes("Math.random(");
     }
@@ -250,6 +288,7 @@ let achievements = [
     "LambDuh!",
     "Use a lambda function",
     false,
+    allJavaScript,
     (change: vscode.TextDocumentContentChangeEvent, line: string) => {
       return line.match(/=.*(.*).*=>/g);
     }
@@ -258,6 +297,7 @@ let achievements = [
     "Line by Line",
     "10000 lines written",
     false,
+    allJavaScript,
     (
       context: vscode.ExtensionContext,
       newLines: number,
@@ -277,6 +317,7 @@ let achievements = [
   //   "Error Eliminator",
   //   "Debug and resolve a runtime error.",
   //   false,
+  // allJavaScript,
   //   () => {
   //     return false;
   //   }
@@ -285,6 +326,7 @@ let achievements = [
   //   "Optimization Expert",
   //   "Optimize your code for speed and efficiency.",
   //   false,
+  //   allJavaScript,
   //   () => {
   //     return false;
   //   }
@@ -293,6 +335,7 @@ let achievements = [
   //   "Syntax Sleuth",
   //   "Successfully debug a cryptic syntax error.",
   //   false,
+  //   allJavaScript,
   //   () => {
   //     return false;
   //   }
@@ -301,6 +344,7 @@ let achievements = [
   //   "Version Control Virtuoso",
   //   "Master Git commands and resolve merge conflicts.",
   //   false,
+  //   allJavaScript,
   //   () => {
   //     return false;
   //   }
@@ -309,10 +353,21 @@ let achievements = [
   //   "Refactoring Wizard",
   //   "Transform spaghetti code into elegant, modular functions.",
   //   false,
+  //   allJavaScript,
   //   () => {
   //     return false;
   //   }
   // ),
+  // HTML Achievements
+  new Achievement(
+    "Tag Customizer",
+    "Create a custom HTML tag",
+    false,
+    allHTML,
+    (change: vscode.TextDocumentContentChangeEvent, line: string) => {
+      return line.match(/<.*[^-]-[^-].*>/g) !== null;
+    }
+  ),
 ];
 
 export function getAchievements(
