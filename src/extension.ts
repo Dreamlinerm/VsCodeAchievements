@@ -18,16 +18,22 @@ export function activate(context: vscode.ExtensionContext) {
   let achievements = getAchievements(
     context.globalState.get<Array<Achievement>>("Achievements")
   );
+  let timeout: NodeJS.Timeout | undefined;
   vscode.workspace.onDidChangeTextDocument((event) => {
-    event.contentChanges.forEach((change) => {
-      checkForCompletion(
-        achievements,
-        context,
-        event.document.languageId,
-        change,
-        event.document
-      );
-    });
+    if (timeout) {
+      clearTimeout(timeout);
+    }
+    timeout = setTimeout(() => {
+      event.contentChanges.forEach((change) => {
+        checkForCompletion(
+          achievements,
+          context,
+          event.document.languageId,
+          change,
+          event.document
+        );
+      });
+    }, 300); // 100ms debounce time
   });
 
   // The command has been defined in the package.json file

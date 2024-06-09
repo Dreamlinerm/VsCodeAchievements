@@ -77,16 +77,6 @@ const allJavaScript = [
 const allHTML = ["html", "vue"];
 let achievements = [
   new Achievement(
-    "Welcome!",
-    "Thank you for downloading the Achievements extension!",
-    false,
-    [...allJavaScript, ...allHTML],
-    () => {
-      return true;
-    },
-    "All supported"
-  ),
-  new Achievement(
     "Hello World Explorer",
     "Write your first “Hello, World!” program in a new language.",
     false,

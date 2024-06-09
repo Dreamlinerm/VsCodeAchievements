@@ -42,10 +42,16 @@ function activate(context) {
     // This line of code will only be executed once when your extension is activated
     console.log("Gamify Plugin is activated");
     let achievements = (0, achievements_1.getAchievements)(context.globalState.get("Achievements"));
+    let timeout;
     vscode.workspace.onDidChangeTextDocument((event) => {
-        event.contentChanges.forEach((change) => {
-            (0, achievements_1.checkForCompletion)(achievements, context, event.document.languageId, change, event.document);
-        });
+        if (timeout) {
+            clearTimeout(timeout);
+        }
+        timeout = setTimeout(() => {
+            event.contentChanges.forEach((change) => {
+                (0, achievements_1.checkForCompletion)(achievements, context, event.document.languageId, change, event.document);
+            });
+        }, 300); // 100ms debounce time
     });
     // The command has been defined in the package.json file
     let resetAchievementsCommand = vscode.commands.registerCommand("gamify.resetAchievements", () => {
@@ -157,9 +163,6 @@ const allJavaScript = [
 ];
 const allHTML = ["html", "vue"];
 let achievements = [
-    new Achievement("Welcome!", "Thank you for downloading the Achievements extension!", false, [...allJavaScript, ...allHTML], () => {
-        return true;
-    }, "All supported"),
     new Achievement("Hello World Explorer", "Write your first “Hello, World!” program in a new language.", false, [...allJavaScript, ...allHTML, "python"], (line) => {
         return line.match(/.*Hello.* World.*/g) !== null;
     }, "All supported"),
