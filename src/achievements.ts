@@ -337,6 +337,15 @@ let achievements = [
   // ),
   // JavaScript Achievements
   new Achievement(
+    "JS connoisseur",
+    "Write your first JavaScript program",
+    false,
+    allJavaScript,
+    () => {
+      return true;
+    }
+  ),
+  new Achievement(
     "Cartograph",
     "Use the first map data type in your code",
     false,
