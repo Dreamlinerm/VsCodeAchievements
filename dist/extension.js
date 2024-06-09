@@ -367,6 +367,24 @@ let achievements = [
     new Achievement("Tag Customizer", "Create a custom HTML tag", false, allHTML, (change, line) => {
         return line.match(/<.*[^-]-[^-].*>/g) !== null;
     }),
+    new Achievement("Pixel Picasso", "Show an image or svg", false, allHTML, (change, line) => {
+        return line.includes("<img") || line.includes("<svg");
+    }),
+    new Achievement("The missing link", "Create a hyperlink", false, allHTML, (change, line) => {
+        return line.includes("<a");
+    }),
+    new Achievement("List Lover", "Create a list", false, allHTML, (change, line) => {
+        return line.includes("<ul") || line.includes("<ol");
+    }),
+    new Achievement("Table Turner", "Create a table", false, allHTML, (change, line) => {
+        return line.includes("<table");
+    }),
+    new Achievement("", "", false, allHTML, (change, line) => {
+        return;
+    }),
+    new Achievement("Frame it!", "Include an iframe", false, allHTML, (change, line) => {
+        return line.includes("<iframe");
+    }),
 ];
 function getAchievements(obj) {
     // If there is no initial object declared

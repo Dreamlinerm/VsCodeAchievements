@@ -368,6 +368,60 @@ let achievements = [
       return line.match(/<.*[^-]-[^-].*>/g) !== null;
     }
   ),
+  new Achievement(
+    "Pixel Picasso",
+    "Show an image or svg",
+    false,
+    allHTML,
+    (change: vscode.TextDocumentContentChangeEvent, line: string) => {
+      return line.includes("<img") || line.includes("<svg");
+    }
+  ),
+  new Achievement(
+    "The missing link",
+    "Create a hyperlink",
+    false,
+    allHTML,
+    (change: vscode.TextDocumentContentChangeEvent, line: string) => {
+      return line.includes("<a");
+    }
+  ),
+  new Achievement(
+    "List Lover",
+    "Create a list",
+    false,
+    allHTML,
+    (change: vscode.TextDocumentContentChangeEvent, line: string) => {
+      return line.includes("<ul") || line.includes("<ol");
+    }
+  ),
+  new Achievement(
+    "Table Turner",
+    "Create a table",
+    false,
+    allHTML,
+    (change: vscode.TextDocumentContentChangeEvent, line: string) => {
+      return line.includes("<table");
+    }
+  ),
+  new Achievement(
+    "",
+    "",
+    false,
+    allHTML,
+    (change: vscode.TextDocumentContentChangeEvent, line: string) => {
+      return;
+    }
+  ),
+  new Achievement(
+    "Frame it!",
+    "Include an iframe",
+    false,
+    allHTML,
+    (change: vscode.TextDocumentContentChangeEvent, line: string) => {
+      return line.includes("<iframe");
+    }
+  ),
 ];
 
 export function getAchievements(
