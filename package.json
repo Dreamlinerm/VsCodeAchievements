@@ -16,7 +16,8 @@
     "onLanguage:typescriptreact",
     "onLanguage:vue",
     "onLanguage:html",
-    "onLanguage:vue-html"
+    "onLanguage:vue-html",
+    "onLanguage:python"
   ],
   "main": "./dist/extension.js",
   "contributes": {

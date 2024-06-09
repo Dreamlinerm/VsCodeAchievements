@@ -94,7 +94,7 @@ let achievements = [
     "Hello World Explorer",
     "Write your first “Hello, World!” program in a new language.",
     false,
-    [...allJavaScript, ...allHTML],
+    [...allJavaScript, ...allHTML, "python"],
     (change: vscode.TextDocumentContentChangeEvent, line: string) => {
       return line.match(/.*Hello.* World.*\)/g) !== null;
     }
@@ -103,62 +103,48 @@ let achievements = [
     "Function Novice",
     "Write your first Function",
     false,
-    allJavaScript,
-    (change: vscode.TextDocumentContentChangeEvent, line: string) => {
-      return line.includes("function");
+    [...allJavaScript, "python"],
+    (
+      change: vscode.TextDocumentContentChangeEvent,
+      line: string,
+      fileType: string
+    ) => {
+      if (fileType === "python") return line.includes("def");
+      else return line.includes("function");
     }
   ),
-  // TODO:
-  // new Achievement(
-  //   "Recursive Ruler",
-  //   "Write a recursive function",
-  //   false,
-  //   allJavaScript,
-  //   () => {
-  //     return true;
-  //   }
-  // ),
   new Achievement(
     "Class Novice",
     "Write your first Class",
     false,
-    allJavaScript,
+    [...allJavaScript, "python"],
     (change: vscode.TextDocumentContentChangeEvent, line: string) => {
       return line.includes("class");
-    }
-  ),
-  new Achievement(
-    "Cartograph",
-    "Use the first map data type in your code",
-    false,
-    allJavaScript,
-    (change: vscode.TextDocumentContentChangeEvent, line: string) => {
-      return line.includes("new Map(");
     }
   ),
   new Achievement(
     "Filter Fanatic",
     "Use the first map function in your code",
     false,
-    allJavaScript,
+    [...allJavaScript, "python"],
     (change: vscode.TextDocumentContentChangeEvent, line: string) => {
-      return line.includes(".map(");
+      return line.includes("map(");
     }
   ),
   new Achievement(
     "Filter Fanatic",
     "Use the first filter function in your code",
     false,
-    allJavaScript,
+    [...allJavaScript, "python"],
     (change: vscode.TextDocumentContentChangeEvent, line: string) => {
-      return line.includes(".filter(");
+      return line.includes("filter(");
     }
   ),
   new Achievement(
     "Map reduced",
     "Use the first reduce function in your code",
     false,
-    allJavaScript,
+    [...allJavaScript, "python"],
     (change: vscode.TextDocumentContentChangeEvent, line: string) => {
       return line.includes(".reduce(");
     }
@@ -167,111 +153,84 @@ let achievements = [
     "Regex Sorcerer",
     "Write complex regex, which is longer than 9 characters",
     false,
-    allJavaScript,
-    (change: vscode.TextDocumentContentChangeEvent, line: string) => {
+    [...allJavaScript, "python"],
+    (
+      change: vscode.TextDocumentContentChangeEvent,
+      line: string,
+      fileType: string
+    ) => {
       // use complicated regex
-      return line.match(/new RegExp\(..{10,}.\)/g) !== null;
-    }
-  ),
-  new Achievement(
-    "Spread the Joy",
-    "Unpack a variable with ...",
-    false,
-    allJavaScript,
-    (change: vscode.TextDocumentContentChangeEvent, line: string) => {
-      return line.includes("...");
+      if (fileType === "python")
+        return line.match(/re.*\(..{10,}.\)/g) !== null;
+      else return line.match(/new RegExp\(..{10,}.\)/g) !== null;
     }
   ),
   new Achievement(
     "String Splitter",
     "Split a string into an array of substrings",
     false,
-    allJavaScript,
-    (change: vscode.TextDocumentContentChangeEvent, line: string) => {
-      return line.includes(".split(");
-    }
-  ),
-  new Achievement(
-    "Parallel Universe",
-    "Create a asynchronous function",
-    false,
-    allJavaScript,
-    (change: vscode.TextDocumentContentChangeEvent, line: string) => {
-      return line.includes("async");
-    }
-  ),
-  new Achievement(
-    "Promise Keeper",
-    "Use a promise",
-    false,
-    allJavaScript,
-    (change: vscode.TextDocumentContentChangeEvent, line: string) => {
-      return line.includes("new Promise(");
+    [...allJavaScript, "python"],
+    (
+      change: vscode.TextDocumentContentChangeEvent,
+      line: string,
+      fileType: string
+    ) => {
+      if (fileType === "python") return line.includes(".split(");
+      else return line.includes(".split(");
     }
   ),
   new Achievement(
     "What's your comment?",
     "Commenting on your code",
     false,
-    [...allJavaScript, ...allHTML],
+    [...allJavaScript, ...allHTML, "python"],
     (
       change: vscode.TextDocumentContentChangeEvent,
       line: string,
       fileType: string
     ) => {
       if (allJavaScript.includes(fileType)) return line.includes("//");
+      else if (fileType === "python") return line.includes("#");
       else return line.includes("<!--");
     }
   ),
-  // TODO:
-  new Achievement(
-    "Documentation Dynamo",
-    "Write a JSDoc comment",
-    false,
-    allJavaScript,
-    (change: vscode.TextDocumentContentChangeEvent, line: string) => {
-      return line.includes("@param") || line.includes("@returns");
-    }
-  ),
-  // TODO:
-  // new Achievement(
-  //   "Code Minimization Guru",
-  //   "Minimize code length while maintaining readability.",
-  //   false,
-  //   allJavaScript,
-  //   () => {
-  //     return false;
-  //   }
-  // ),
   new Achievement(
     "Shorthand Master",
     "Writing a shorthand if",
     false,
-    allJavaScript,
-    (change: vscode.TextDocumentContentChangeEvent, line: string) => {
-      return line.match(/.*\?.*:/g) !== null;
+    [...allJavaScript, "python"],
+    (
+      change: vscode.TextDocumentContentChangeEvent,
+      line: string,
+      fileType: string
+    ) => {
+      if (fileType === "python")
+        return line.includes("if") && line.includes("else");
+      else return line.match(/.*\?.*:/g) !== null;
     }
   ),
   new Achievement(
     "Switcheroo!",
     "Using a switch instead of else if",
     false,
-    allJavaScript,
-    (change: vscode.TextDocumentContentChangeEvent, line: string) => {
-      return line.includes("switch");
+    [...allJavaScript, "python"],
+    (
+      change: vscode.TextDocumentContentChangeEvent,
+      line: string,
+      fileType: string
+    ) => {
+      if (fileType === "python") return line.includes("case");
+      else return line.includes("switch");
     }
   ),
   new Achievement(
     "Bit by Bit",
     "Bit manipulation operator used",
     false,
-    allJavaScript,
+    [...allJavaScript, "python"],
     (change: vscode.TextDocumentContentChangeEvent, line: string) => {
-      const expressions = [" & ", " | ", "^", "~", "<<", ">>"];
-      return expressions.some((exp) => {
-        if (line.includes(exp)) {
-          return true;
-        }
+      return [" & ", " | ", "^", "~", "<<", ">>"].some((exp) => {
+        if (line.includes(exp)) return true;
       });
     }
   ),
@@ -279,25 +238,35 @@ let achievements = [
     "Magic Numbers",
     "Using a random number",
     false,
-    allJavaScript,
-    (change: vscode.TextDocumentContentChangeEvent, line: string) => {
-      return line.includes("Math.random(");
+    [...allJavaScript, "python"],
+    (
+      change: vscode.TextDocumentContentChangeEvent,
+      line: string,
+      fileType: string
+    ) => {
+      if (fileType === "python") return line.includes("random");
+      else return line.includes("Math.random(");
     }
   ),
   new Achievement(
     "LambDuh!",
     "Use a lambda function",
     false,
-    allJavaScript,
-    (change: vscode.TextDocumentContentChangeEvent, line: string) => {
-      return line.match(/=.*(.*).*=>/g);
+    [...allJavaScript, "python"],
+    (
+      change: vscode.TextDocumentContentChangeEvent,
+      line: string,
+      fileType: string
+    ) => {
+      if (fileType === "python") return line.includes("lambda");
+      else return line.match(/=.*\(.*\).*=>/g);
     }
   ),
   new Achievement(
     "Line by Line",
     "10000 lines written",
     false,
-    allJavaScript,
+    [...allJavaScript, ...allHTML, "python"],
     (
       context: vscode.ExtensionContext,
       newLines: number,
@@ -312,7 +281,26 @@ let achievements = [
       return false;
     }
   ),
-  // TODO: Harder achievements
+  // TODO: Harder achievements to implement
+  // new Achievement(
+  //   "Code Minimization Guru",
+  //   "Minimize code length while maintaining readability.",
+  //   false,
+  //   allJavaScript,
+  //   () => {
+  //     return false;
+  //   }
+  // ),
+  // TODO:
+  // new Achievement(
+  //   "Recursive Ruler",
+  //   "Write a recursive function",
+  //   false,
+  //   allJavaScript,
+  //   () => {
+  //     return true;
+  //   }
+  // ),
   // new Achievement(
   //   "Error Eliminator",
   //   "Debug and resolve a runtime error.",
@@ -358,7 +346,62 @@ let achievements = [
   //     return false;
   //   }
   // ),
+  // JavaScript Achievements
+  new Achievement(
+    "Cartograph",
+    "Use the first map data type in your code",
+    false,
+    allJavaScript,
+    (change: vscode.TextDocumentContentChangeEvent, line: string) => {
+      return line.includes("new Map(");
+    }
+  ),
+  new Achievement(
+    "Spread the Joy",
+    "Unpack a variable with ...",
+    false,
+    allJavaScript,
+    (change: vscode.TextDocumentContentChangeEvent, line: string) => {
+      return line.includes("...");
+    }
+  ),
+  new Achievement(
+    "Parallel Universe",
+    "Create a asynchronous function",
+    false,
+    allJavaScript,
+    (change: vscode.TextDocumentContentChangeEvent, line: string) => {
+      return line.includes("async");
+    }
+  ),
+  new Achievement(
+    "Promise Keeper",
+    "Use a promise",
+    false,
+    allJavaScript,
+    (change: vscode.TextDocumentContentChangeEvent, line: string) => {
+      return line.includes("new Promise(");
+    }
+  ),
+  new Achievement(
+    "Documentation Dynamo",
+    "Write a JSDoc comment",
+    false,
+    allJavaScript,
+    (change: vscode.TextDocumentContentChangeEvent, line: string) => {
+      return line.includes("@param") || line.includes("@returns");
+    }
+  ),
   // HTML Achievements
+  new Achievement(
+    "HTML Hero",
+    "Write your first HTML program",
+    false,
+    allHTML,
+    () => {
+      return true;
+    }
+  ),
   new Achievement(
     "Tag Customizer",
     "Create a custom HTML tag",
@@ -420,6 +463,16 @@ let achievements = [
     allHTML,
     (change: vscode.TextDocumentContentChangeEvent, line: string) => {
       return line.includes("<iframe");
+    }
+  ),
+  // python
+  new Achievement(
+    "Pythonic",
+    "Write your first Python program",
+    false,
+    ["python"],
+    (change: vscode.TextDocumentContentChangeEvent, line: string) => {
+      return true;
     }
   ),
 ];

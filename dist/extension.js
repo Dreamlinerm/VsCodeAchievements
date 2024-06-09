@@ -221,12 +221,97 @@ let achievements = [
     new Achievement("Welcome!", "Thank you for downloading the Achievements extension!", false, [...allJavaScript, ...allHTML], () => {
         return true;
     }),
-    new Achievement("Hello World Explorer", "Write your first “Hello, World!” program in a new language.", false, [...allJavaScript, ...allHTML], (change, line) => {
+    new Achievement("Hello World Explorer", "Write your first “Hello, World!” program in a new language.", false, [...allJavaScript, ...allHTML, "python"], (change, line) => {
         return line.match(/.*Hello.* World.*\)/g) !== null;
     }),
-    new Achievement("Function Novice", "Write your first Function", false, allJavaScript, (change, line) => {
-        return line.includes("function");
+    new Achievement("Function Novice", "Write your first Function", false, [...allJavaScript, "python"], (change, line, fileType) => {
+        if (fileType === "python")
+            return line.includes("def");
+        else
+            return line.includes("function");
     }),
+    new Achievement("Class Novice", "Write your first Class", false, [...allJavaScript, "python"], (change, line) => {
+        return line.includes("class");
+    }),
+    new Achievement("Filter Fanatic", "Use the first map function in your code", false, [...allJavaScript, "python"], (change, line) => {
+        return line.includes("map(");
+    }),
+    new Achievement("Filter Fanatic", "Use the first filter function in your code", false, [...allJavaScript, "python"], (change, line) => {
+        return line.includes("filter(");
+    }),
+    new Achievement("Map reduced", "Use the first reduce function in your code", false, [...allJavaScript, "python"], (change, line) => {
+        return line.includes(".reduce(");
+    }),
+    new Achievement("Regex Sorcerer", "Write complex regex, which is longer than 9 characters", false, [...allJavaScript, "python"], (change, line, fileType) => {
+        // use complicated regex
+        if (fileType === "python")
+            return line.match(/re.*\(..{10,}.\)/g) !== null;
+        else
+            return line.match(/new RegExp\(..{10,}.\)/g) !== null;
+    }),
+    new Achievement("String Splitter", "Split a string into an array of substrings", false, [...allJavaScript, "python"], (change, line, fileType) => {
+        if (fileType === "python")
+            return line.includes(".split(");
+        else
+            return line.includes(".split(");
+    }),
+    new Achievement("What's your comment?", "Commenting on your code", false, [...allJavaScript, ...allHTML, "python"], (change, line, fileType) => {
+        if (allJavaScript.includes(fileType))
+            return line.includes("//");
+        else if (fileType === "python")
+            return line.includes("#");
+        else
+            return line.includes("<!--");
+    }),
+    new Achievement("Shorthand Master", "Writing a shorthand if", false, [...allJavaScript, "python"], (change, line, fileType) => {
+        if (fileType === "python")
+            return line.includes("if") && line.includes("else");
+        else
+            return line.match(/.*\?.*:/g) !== null;
+    }),
+    new Achievement("Switcheroo!", "Using a switch instead of else if", false, [...allJavaScript, "python"], (change, line, fileType) => {
+        if (fileType === "python")
+            return line.includes("case");
+        else
+            return line.includes("switch");
+    }),
+    new Achievement("Bit by Bit", "Bit manipulation operator used", false, [...allJavaScript, "python"], (change, line) => {
+        return [" & ", " | ", "^", "~", "<<", ">>"].some((exp) => {
+            if (line.includes(exp))
+                return true;
+        });
+    }),
+    new Achievement("Magic Numbers", "Using a random number", false, [...allJavaScript, "python"], (change, line, fileType) => {
+        if (fileType === "python")
+            return line.includes("random");
+        else
+            return line.includes("Math.random(");
+    }),
+    new Achievement("LambDuh!", "Use a lambda function", false, [...allJavaScript, "python"], (change, line, fileType) => {
+        if (fileType === "python")
+            return line.includes("lambda");
+        else
+            return line.match(/=.*\(.*\).*=>/g);
+    }),
+    new Achievement("Line by Line", "10000 lines written", false, [...allJavaScript, ...allHTML, "python"], (context, newLines, GlobalChangedLines) => {
+        if (newLines > 0) {
+            GlobalChangedLines += newLines;
+            // save newLines to extension state
+            context.globalState.update("changedLines", GlobalChangedLines);
+            return GlobalChangedLines > 10000;
+        }
+        return false;
+    }),
+    // TODO: Harder achievements to implement
+    // new Achievement(
+    //   "Code Minimization Guru",
+    //   "Minimize code length while maintaining readability.",
+    //   false,
+    //   allJavaScript,
+    //   () => {
+    //     return false;
+    //   }
+    // ),
     // TODO:
     // new Achievement(
     //   "Recursive Ruler",
@@ -237,87 +322,6 @@ let achievements = [
     //     return true;
     //   }
     // ),
-    new Achievement("Class Novice", "Write your first Class", false, allJavaScript, (change, line) => {
-        return line.includes("class");
-    }),
-    new Achievement("Cartograph", "Use the first map data type in your code", false, allJavaScript, (change, line) => {
-        return line.includes("new Map(");
-    }),
-    new Achievement("Filter Fanatic", "Use the first map function in your code", false, allJavaScript, (change, line) => {
-        return line.includes(".map(");
-    }),
-    new Achievement("Filter Fanatic", "Use the first filter function in your code", false, allJavaScript, (change, line) => {
-        return line.includes(".filter(");
-    }),
-    new Achievement("Map reduced", "Use the first reduce function in your code", false, allJavaScript, (change, line) => {
-        return line.includes(".reduce(");
-    }),
-    new Achievement("Regex Sorcerer", "Write complex regex, which is longer than 9 characters", false, allJavaScript, (change, line) => {
-        // use complicated regex
-        return line.match(/new RegExp\(..{10,}.\)/g) !== null;
-    }),
-    new Achievement("Spread the Joy", "Unpack a variable with ...", false, allJavaScript, (change, line) => {
-        return line.includes("...");
-    }),
-    new Achievement("String Splitter", "Split a string into an array of substrings", false, allJavaScript, (change, line) => {
-        return line.includes(".split(");
-    }),
-    new Achievement("Parallel Universe", "Create a asynchronous function", false, allJavaScript, (change, line) => {
-        return line.includes("async");
-    }),
-    new Achievement("Promise Keeper", "Use a promise", false, allJavaScript, (change, line) => {
-        return line.includes("new Promise(");
-    }),
-    new Achievement("What's your comment?", "Commenting on your code", false, [...allJavaScript, ...allHTML], (change, line, fileType) => {
-        if (allJavaScript.includes(fileType))
-            return line.includes("//");
-        else
-            return line.includes("<!--");
-    }),
-    // TODO:
-    new Achievement("Documentation Dynamo", "Write a JSDoc comment", false, allJavaScript, (change, line) => {
-        return line.includes("@param") || line.includes("@returns");
-    }),
-    // TODO:
-    // new Achievement(
-    //   "Code Minimization Guru",
-    //   "Minimize code length while maintaining readability.",
-    //   false,
-    //   allJavaScript,
-    //   () => {
-    //     return false;
-    //   }
-    // ),
-    new Achievement("Shorthand Master", "Writing a shorthand if", false, allJavaScript, (change, line) => {
-        return line.match(/.*\?.*:/g) !== null;
-    }),
-    new Achievement("Switcheroo!", "Using a switch instead of else if", false, allJavaScript, (change, line) => {
-        return line.includes("switch");
-    }),
-    new Achievement("Bit by Bit", "Bit manipulation operator used", false, allJavaScript, (change, line) => {
-        const expressions = [" & ", " | ", "^", "~", "<<", ">>"];
-        return expressions.some((exp) => {
-            if (line.includes(exp)) {
-                return true;
-            }
-        });
-    }),
-    new Achievement("Magic Numbers", "Using a random number", false, allJavaScript, (change, line) => {
-        return line.includes("Math.random(");
-    }),
-    new Achievement("LambDuh!", "Use a lambda function", false, allJavaScript, (change, line) => {
-        return line.match(/=.*(.*).*=>/g);
-    }),
-    new Achievement("Line by Line", "10000 lines written", false, allJavaScript, (context, newLines, GlobalChangedLines) => {
-        if (newLines > 0) {
-            GlobalChangedLines += newLines;
-            // save newLines to extension state
-            context.globalState.update("changedLines", GlobalChangedLines);
-            return GlobalChangedLines > 10000;
-        }
-        return false;
-    }),
-    // TODO: Harder achievements
     // new Achievement(
     //   "Error Eliminator",
     //   "Debug and resolve a runtime error.",
@@ -363,7 +367,26 @@ let achievements = [
     //     return false;
     //   }
     // ),
+    // JavaScript Achievements
+    new Achievement("Cartograph", "Use the first map data type in your code", false, allJavaScript, (change, line) => {
+        return line.includes("new Map(");
+    }),
+    new Achievement("Spread the Joy", "Unpack a variable with ...", false, allJavaScript, (change, line) => {
+        return line.includes("...");
+    }),
+    new Achievement("Parallel Universe", "Create a asynchronous function", false, allJavaScript, (change, line) => {
+        return line.includes("async");
+    }),
+    new Achievement("Promise Keeper", "Use a promise", false, allJavaScript, (change, line) => {
+        return line.includes("new Promise(");
+    }),
+    new Achievement("Documentation Dynamo", "Write a JSDoc comment", false, allJavaScript, (change, line) => {
+        return line.includes("@param") || line.includes("@returns");
+    }),
     // HTML Achievements
+    new Achievement("HTML Hero", "Write your first HTML program", false, allHTML, () => {
+        return true;
+    }),
     new Achievement("Tag Customizer", "Create a custom HTML tag", false, allHTML, (change, line) => {
         return line.match(/<.*[^-]-[^-].*>/g) !== null;
     }),
@@ -384,6 +407,10 @@ let achievements = [
     }),
     new Achievement("Frame it!", "Include an iframe", false, allHTML, (change, line) => {
         return line.includes("<iframe");
+    }),
+    // python
+    new Achievement("Pythonic", "Write your first Python program", false, ["python"], (change, line) => {
+        return true;
     }),
 ];
 function getAchievements(obj) {
