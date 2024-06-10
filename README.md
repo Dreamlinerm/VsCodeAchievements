@@ -1,4 +1,4 @@
-# Code Achievements
+# Achievements for VS Code
 
 ## Features
 
