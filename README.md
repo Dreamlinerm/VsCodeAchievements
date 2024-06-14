@@ -11,7 +11,7 @@ So there are two ways you can use this extension:
 
 2. Hunt the achievements and try to get them all. Except Line by Line, you can get all achievements immediately.
 
-## Language Support
+## Current Language Support
 
 - [x] JavaScript
 - [x] TypeScript
@@ -20,14 +20,10 @@ So there are two ways you can use this extension:
 
 ## Commands
 
-Reset all achievements:
-```json
-{
-    "key": "ctrl+shift+p",
-    "commands": ["Reset Achievements","Show Achievements"]
-},
+To access the commands, press `ctrl+shift+p`
 
-```
+- `Show Achievements`
+- `Reset Achievements`
 
 ## Achievements Overview Page
 
