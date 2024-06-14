@@ -28,7 +28,7 @@ Reset all achievements:
 
 ## Installation
 
-Download in vs code marketplace(not yet finished)
+Download in vs code marketplace
 
 ## Development
 
