@@ -285,27 +285,6 @@ let achievements = [
     "All supported"
   ),
   new Achievement(
-    "690424a0-dd94-4663-8c38-9198417be645",
-    "Line by Line",
-    "10000 lines written",
-    false,
-    [...allJavaScript, ...allHTML, "python"],
-    (
-      context: vscode.ExtensionContext,
-      newLines: number,
-      GlobalChangedLines: number
-    ) => {
-      if (newLines > 0) {
-        GlobalChangedLines += newLines;
-        // save newLines to extension state
-        context.globalState.update("changedLines", GlobalChangedLines);
-        return GlobalChangedLines > 10000;
-      }
-      return false;
-    },
-    "All supported"
-  ),
-  new Achievement(
     "7a11106c-5868-4971-bc20-1f6f920d94a8",
     "Except for that...",
     "Write try catch/except block",
@@ -326,7 +305,8 @@ let achievements = [
     (line: string, fileType: string) => {
       if (fileType === "python") return includesSome(line, ["open", ".write"]);
       else return includesSome(line, ["require('fs')"]);
-    }
+    },
+    "All supported"
   ),
   new Achievement(
     "79f60984-43c6-456b-af49-82cfc3462699",
@@ -341,7 +321,8 @@ let achievements = [
           includesEvery(line, ["list(", ".fromkeys("])
         );
       } else return includesSome(line, ["[...new Set("]);
-    }
+    },
+    "All supported"
   ),
   new Achievement(
     "66c1f2e7-008b-4013-b6f8-014e553ce833",
@@ -356,7 +337,29 @@ let achievements = [
           "JSON.parse(JSON.stringify(",
           "structuredClone(",
         ]);
-    }
+    },
+    "All supported"
+  ),
+  new Achievement(
+    "690424a0-dd94-4663-8c38-9198417be645",
+    "Line by Line",
+    "10000 lines written",
+    false,
+    [...allJavaScript, ...allHTML, "python"],
+    (
+      context: vscode.ExtensionContext,
+      newLines: number,
+      GlobalChangedLines: number
+    ) => {
+      if (newLines > 0) {
+        GlobalChangedLines += newLines;
+        // save newLines to extension state
+        context.globalState.update("changedLines", GlobalChangedLines);
+        return GlobalChangedLines > 10000;
+      }
+      return false;
+    },
+    "All supported"
   ),
   // TODO: Harder achievements to implement
   // new Achievement(
