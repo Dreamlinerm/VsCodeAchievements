@@ -1,7 +1,7 @@
 {
-  "name": "gamify",
-  "displayName": "Gamify",
-  "description": "Gamify your coding experience",
+  "name": "achievements",
+  "displayName": "Achievements",
+  "description": "Gameify your coding experience",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.90.0"
@@ -23,11 +23,11 @@
   "contributes": {
     "commands": [
       {
-        "command": "gamify.resetAchievements",
+        "command": "achievements.resetAchievements",
         "title": "Reset Achievements"
       },
       {
-        "command": "gamify.showAchievements",
+        "command": "achievements.showAchievements",
         "title": "Show Achievements"
       }
     ]

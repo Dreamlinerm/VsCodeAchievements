@@ -14,7 +14,7 @@ import { AchievementPanel } from "./AchievementPanel";
 export function activate(context: vscode.ExtensionContext) {
   // Use the console to output diagnostic information (console.log) and errors (console.error)
   // This line of code will only be executed once when your extension is activated
-  console.log("Gamify Plugin is activated");
+  console.log("Achievements Plugin is activated");
   let achievements = getAchievements(
     context.globalState.get<Array<Achievement>>("Achievements")
   );
@@ -38,13 +38,13 @@ export function activate(context: vscode.ExtensionContext) {
 
   // The command has been defined in the package.json file
   let resetAchievementsCommand = vscode.commands.registerCommand(
-    "gamify.resetAchievements",
+    "achievements.resetAchievements",
     () => {
       achievements = resetAchievements(context);
     }
   );
   let showAchievementsCommand = vscode.commands.registerCommand(
-    "gamify.showAchievements",
+    "achievements.showAchievements",
     () => {
       AchievementPanel.createOrShow(context.extensionUri, achievements);
     }
