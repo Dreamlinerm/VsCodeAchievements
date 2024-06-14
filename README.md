@@ -1,5 +1,8 @@
 # Achievements for VS Code
 
+![Achievements Preview](images/preview.gif)
+
+
 ## Features
 
 So there are two ways you can use this extension:
@@ -26,6 +29,10 @@ Reset all achievements:
 
 ```
 
+## Achievements Overview Page
+
+![Achievements.png](images/Achievements.png)
+
 ## Installation
 
 Download in vs code marketplace
@@ -33,4 +40,3 @@ Download in vs code marketplace
 ## Development
 
 Press F5 on the extension.ts file to start the extension in a new window.
-
