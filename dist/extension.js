@@ -279,20 +279,33 @@ let achievements = [
         return false;
     }, "All supported"),
     new Achievement("7a11106c-5868-4971-bc20-1f6f920d94a8", "Except for that...", "Write try catch/except block", false, [...allJavaScript, "python"], (line, fileType) => {
-        if (fileType === "python") {
+        if (fileType === "python")
             return includesSome(line, ["except"]);
-        }
-        else {
+        else
             return includesSome(line, ["catch"]);
-        }
     }, "All supported"),
     new Achievement("0f669df5-ec73-41f3-a0ea-154baad3e03c", "File scripters", "Writing/opening a file", false, [...allJavaScript, "python"], (line, fileType) => {
-        if (fileType === "python") {
+        if (fileType === "python")
             return includesSome(line, ["open", ".write"]);
-        }
-        else {
+        else
             return includesSome(line, ["require('fs')"]);
+    }),
+    new Achievement("79f60984-43c6-456b-af49-82cfc3462699", "Duplicate Eliminator", "Remove duplicates from a list", false, [...allJavaScript, "python"], (line, fileType) => {
+        if (fileType === "python") {
+            return (includesSome(line, ["list(set("]) ||
+                includesEvery(line, ["list(", ".fromkeys("]));
         }
+        else
+            return includesSome(line, ["[...new Set("]);
+    }),
+    new Achievement("66c1f2e7-008b-4013-b6f8-014e553ce833", "Deep Copy Cat", "Deep clone an object", false, [...allJavaScript, "python"], (line, fileType) => {
+        if (fileType === "python")
+            return includesSome(line, ["copy.deepcopy("]);
+        else
+            return includesSome(line, [
+                "JSON.parse(JSON.stringify(",
+                "structuredClone(",
+            ]);
     }),
     // TODO: Harder achievements to implement
     // new Achievement(
