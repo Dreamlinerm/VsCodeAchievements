@@ -1,6 +1,6 @@
 # Achievements for VS Code
 
-![Achievements Preview](images/preview.gif)
+<img src="images/preview.gif" alt="Achievements Preview" width="1184px"/>
 
 
 ## Features
