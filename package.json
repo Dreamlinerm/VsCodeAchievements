@@ -4,6 +4,7 @@
   "description": "Gameify your coding experience",
   "icon": "images/icon.png",
   "version": "0.0.1",
+  "publisher": "Dreamliner",
   "engines": {
     "vscode": "^1.90.0"
   },
@@ -33,6 +34,14 @@
       }
     ]
   },
+  "bugs": {
+    "url": "https://github.com/Dreamlinerm/VsCodeAchievementsissues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Dreamlinerm/VsCodeAchievements.git"
+  },
+  "homepage": "https://github.com/Dreamlinerm/VsCodeAchievements/",
   "scripts": {
     "vscode:prepublish": "npm run package",
     "compile": "webpack",
