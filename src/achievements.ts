@@ -110,9 +110,13 @@ const allJavaScript = [
   "vue",
 ];
 const allHTML = ["html", "vue"];
-function includes(line: string, str: string[]) {
+function includesSome(line: string, str: string[]) {
   // indexOf is faster than includes
   return str.some((s) => line.indexOf(s) !== -1);
+}
+function includesEvery(line: string, str: string[]) {
+  // indexOf is faster than includes
+  return str.every((s) => line.indexOf(s) !== -1);
 }
 
 let achievements = [
@@ -134,8 +138,8 @@ let achievements = [
     false,
     [...allJavaScript, "python"],
     (line: string, fileType: string) => {
-      if (fileType === "python") return includes(line, ["def"]);
-      else return includes(line, ["function"]);
+      if (fileType === "python") return includesSome(line, ["def"]);
+      else return includesSome(line, ["function"]);
     },
     "All supported"
   ),
@@ -146,7 +150,7 @@ let achievements = [
     false,
     [...allJavaScript, "python"],
     (line: string) => {
-      return includes(line, ["class"]);
+      return includesSome(line, ["class"]);
     },
     "All supported"
   ),
@@ -157,7 +161,7 @@ let achievements = [
     false,
     [...allJavaScript, "python"],
     (line: string) => {
-      return includes(line, ["map("]);
+      return includesSome(line, ["map("]);
     },
     "All supported"
   ),
@@ -168,7 +172,7 @@ let achievements = [
     false,
     [...allJavaScript, "python"],
     (line: string) => {
-      return includes(line, ["filter("]);
+      return includesSome(line, ["filter("]);
     },
     "All supported"
   ),
@@ -179,7 +183,7 @@ let achievements = [
     false,
     [...allJavaScript, "python"],
     (line: string) => {
-      return includes(line, [".reduce("]);
+      return includesSome(line, [".reduce("]);
     },
     "All supported"
   ),
@@ -204,7 +208,7 @@ let achievements = [
     false,
     [...allJavaScript, "python"],
     (line: string, fileType: string) => {
-      return includes(line, [".split("]);
+      return includesSome(line, [".split("]);
     },
     "All supported"
   ),
@@ -215,9 +219,9 @@ let achievements = [
     false,
     [...allJavaScript, ...allHTML, "python"],
     (line: string, fileType: string) => {
-      if (allJavaScript.includes(fileType)) return includes(line, ["//"]);
-      else if (fileType === "python") return includes(line, ["#"]);
-      else return includes(line, ["<!--"]);
+      if (allJavaScript.includes(fileType)) return includesSome(line, ["//"]);
+      else if (fileType === "python") return includesSome(line, ["#"]);
+      else return includesSome(line, ["<!--"]);
     },
     "All supported"
   ),
@@ -228,8 +232,7 @@ let achievements = [
     false,
     [...allJavaScript, "python"],
     (line: string, fileType: string) => {
-      if (fileType === "python")
-        return includes(line, ["if"]) && includes(line, ["else"]);
+      if (fileType === "python") return includesEvery(line, ["if", "else"]);
       else return line.match(/.*\?.*:/g) !== null;
     },
     "All supported"
@@ -241,8 +244,8 @@ let achievements = [
     false,
     [...allJavaScript, "python"],
     (line: string, fileType: string) => {
-      if (fileType === "python") return includes(line, ["case"]);
-      else return includes(line, ["switch"]);
+      if (fileType === "python") return includesSome(line, ["case"]);
+      else return includesSome(line, ["switch"]);
     },
     "All supported"
   ),
@@ -253,9 +256,7 @@ let achievements = [
     false,
     [...allJavaScript, "python"],
     (line: string) => {
-      return [" & ", " | ", "^", "~", "<<", ">>"].some((exp) => {
-        if (line.includes(exp)) return true;
-      });
+      return includesSome(line, ["&", "|", "^", "~", "<<", ">>"]);
     },
     "All supported"
   ),
@@ -266,8 +267,8 @@ let achievements = [
     false,
     [...allJavaScript, "python"],
     (line: string, fileType: string) => {
-      if (fileType === "python") return includes(line, ["random"]);
-      else return includes(line, ["Math.random("]);
+      if (fileType === "python") return includesSome(line, ["random"]);
+      else return includesSome(line, ["Math.random("]);
     },
     "All supported"
   ),
@@ -278,7 +279,7 @@ let achievements = [
     false,
     [...allJavaScript, "python"],
     (line: string, fileType: string) => {
-      if (fileType === "python") return includes(line, ["lambda"]);
+      if (fileType === "python") return includesSome(line, ["lambda"]);
       else return line.match(/=.*\(.*\).*=>/g);
     },
     "All supported"
@@ -312,9 +313,9 @@ let achievements = [
     [...allJavaScript, "python"],
     (line: string, fileType: string) => {
       if (fileType === "python") {
-        return includes(line, ["except"]);
+        return includesSome(line, ["except"]);
       } else {
-        return includes(line, ["catch"]);
+        return includesSome(line, ["catch"]);
       }
     },
     "All supported"
@@ -327,9 +328,9 @@ let achievements = [
     [...allJavaScript, "python"],
     (line: string, fileType: string) => {
       if (fileType === "python") {
-        return includes(line, ["open", ".write"]);
+        return includesSome(line, ["open", ".write"]);
       } else {
-        return includes(line, ["require('fs')"]);
+        return includesSome(line, ["require('fs')"]);
       }
     }
   ),
@@ -416,7 +417,7 @@ let achievements = [
     false,
     allJavaScript,
     (line: string) => {
-      return includes(line, ["new Map("]);
+      return includesSome(line, ["new Map("]);
     }
   ),
   new Achievement(
@@ -426,7 +427,7 @@ let achievements = [
     false,
     allJavaScript,
     (line: string) => {
-      return includes(line, ["..."]);
+      return includesSome(line, ["..."]);
     }
   ),
   new Achievement(
@@ -436,7 +437,7 @@ let achievements = [
     false,
     allJavaScript,
     (line: string) => {
-      return includes(line, ["async"]);
+      return includesSome(line, ["async"]);
     }
   ),
   new Achievement(
@@ -446,7 +447,7 @@ let achievements = [
     false,
     allJavaScript,
     (line: string) => {
-      return includes(line, ["new Promise("]);
+      return includesSome(line, ["new Promise("]);
     }
   ),
   new Achievement(
@@ -456,7 +457,7 @@ let achievements = [
     false,
     allJavaScript,
     (line: string) => {
-      return includes(line, ["@param", "@returns"]);
+      return includesSome(line, ["@param", "@returns"]);
     }
   ),
   // HTML Achievements
@@ -487,7 +488,7 @@ let achievements = [
     false,
     allHTML,
     (line: string) => {
-      return includes(line, ["<img", "<svg"]);
+      return includesSome(line, ["<img", "<svg"]);
     }
   ),
   new Achievement(
@@ -497,7 +498,7 @@ let achievements = [
     false,
     allHTML,
     (line: string) => {
-      return includes(line, ["<a"]);
+      return includesSome(line, ["<a"]);
     }
   ),
   new Achievement(
@@ -507,7 +508,7 @@ let achievements = [
     false,
     allHTML,
     (line: string) => {
-      return includes(line, ["<ul", "<ol"]);
+      return includesSome(line, ["<ul", "<ol"]);
     }
   ),
   new Achievement(
@@ -517,7 +518,7 @@ let achievements = [
     false,
     allHTML,
     (line: string) => {
-      return includes(line, ["<table"]);
+      return includesSome(line, ["<table"]);
     }
   ),
   new Achievement(
@@ -527,7 +528,7 @@ let achievements = [
     false,
     allHTML,
     (line: string) => {
-      return includes(line, ["<iframe"]);
+      return includesSome(line, ["<iframe"]);
     }
   ),
   // python
@@ -539,6 +540,26 @@ let achievements = [
     ["python"],
     (line: string) => {
       return true;
+    }
+  ),
+  new Achievement(
+    "7e6f3e4b-5f9a-4c5e-9f3b-9e1d2e3b4b3b",
+    "Numbers are not good enough",
+    "Use NumPy Module",
+    false,
+    ["python"],
+    (line: string) => {
+      return includesSome(line, ["numpy", "np."]);
+    }
+  ),
+  new Achievement(
+    "f2c7e2b3-3e1d-4d8d-8a5f-0e2b2b8b7b7b",
+    "Pandas Pandemonium",
+    "Use Pandas Module",
+    false,
+    ["python"],
+    (line: string) => {
+      return includesSome(line, ["pandas", "pd."]);
     }
   ),
 ];

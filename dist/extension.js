@@ -194,9 +194,13 @@ const allJavaScript = [
     "vue",
 ];
 const allHTML = ["html", "vue"];
-function includes(line, str) {
+function includesSome(line, str) {
     // indexOf is faster than includes
     return str.some((s) => line.indexOf(s) !== -1);
+}
+function includesEvery(line, str) {
+    // indexOf is faster than includes
+    return str.every((s) => line.indexOf(s) !== -1);
 }
 let achievements = [
     new Achievement("0054c520-2606-4669-90cf-ad8f6d1dc473", "Hello World Explorer", "Write your first “Hello, World!” program in a new language.", false, [...allJavaScript, ...allHTML, "python"], (line) => {
@@ -204,21 +208,21 @@ let achievements = [
     }, "All supported"),
     new Achievement("d7c15280-8d83-4212-8548-7d5e2cb4debf", "Function Novice", "Write your first Function", false, [...allJavaScript, "python"], (line, fileType) => {
         if (fileType === "python")
-            return includes(line, ["def"]);
+            return includesSome(line, ["def"]);
         else
-            return includes(line, ["function"]);
+            return includesSome(line, ["function"]);
     }, "All supported"),
     new Achievement("276989cb-f564-426e-97bf-8876d7232cd9", "Class Novice", "Write your first Class", false, [...allJavaScript, "python"], (line) => {
-        return includes(line, ["class"]);
+        return includesSome(line, ["class"]);
     }, "All supported"),
     new Achievement("552c7305-d31b-4048-989d-dd165786e8e1", "Mapper", "Use the first map function in your code", false, [...allJavaScript, "python"], (line) => {
-        return includes(line, ["map("]);
+        return includesSome(line, ["map("]);
     }, "All supported"),
     new Achievement("66191a48-daa5-4395-b862-37ebe0be8fb0", "Filter Fanatic", "Use the first filter function in your code", false, [...allJavaScript, "python"], (line) => {
-        return includes(line, ["filter("]);
+        return includesSome(line, ["filter("]);
     }, "All supported"),
     new Achievement("4a837b09-2d4e-43c3-b9b7-f81a962b404e", "Map reduced", "Use the first reduce function in your code", false, [...allJavaScript, "python"], (line) => {
-        return includes(line, [".reduce("]);
+        return includesSome(line, [".reduce("]);
     }, "All supported"),
     new Achievement("8a15e34c-4bc5-4ca5-91ec-dde41dd28df3", "Regex Sorcerer", "Write complex regex, which is longer than 9 characters", false, [...allJavaScript, "python"], (line, fileType) => {
         // use complicated regex
@@ -228,43 +232,40 @@ let achievements = [
             return line.match(/new RegExp\(..{10,}.\)/g) !== null;
     }, "All supported"),
     new Achievement("f019624-c3fc-4fe6-9982-a08ec93bf423", "String Splitter", "Split a string into an array of substrings", false, [...allJavaScript, "python"], (line, fileType) => {
-        return includes(line, [".split("]);
+        return includesSome(line, [".split("]);
     }, "All supported"),
     new Achievement("e1270905-6334-4404-84dc-a41e553d8a79", "What's your comment?", "Commenting on your code", false, [...allJavaScript, ...allHTML, "python"], (line, fileType) => {
         if (allJavaScript.includes(fileType))
-            return includes(line, ["//"]);
+            return includesSome(line, ["//"]);
         else if (fileType === "python")
-            return includes(line, ["#"]);
+            return includesSome(line, ["#"]);
         else
-            return includes(line, ["<!--"]);
+            return includesSome(line, ["<!--"]);
     }, "All supported"),
     new Achievement("e1270905-6334-4404-84dc-a41e553d8a79", "Shorthand Master", "Writing a shorthand if", false, [...allJavaScript, "python"], (line, fileType) => {
         if (fileType === "python")
-            return includes(line, ["if"]) && includes(line, ["else"]);
+            return includesEvery(line, ["if", "else"]);
         else
             return line.match(/.*\?.*:/g) !== null;
     }, "All supported"),
     new Achievement("602d1d62-7080-437c-9f3c-9829a418395d", "Switcheroo!", "Using a switch instead of else if", false, [...allJavaScript, "python"], (line, fileType) => {
         if (fileType === "python")
-            return includes(line, ["case"]);
+            return includesSome(line, ["case"]);
         else
-            return includes(line, ["switch"]);
+            return includesSome(line, ["switch"]);
     }, "All supported"),
     new Achievement("17318c44-feb4-498a-b92e-6a83f9218c32", "Bit by Bit", "Bit manipulation operator used", false, [...allJavaScript, "python"], (line) => {
-        return [" & ", " | ", "^", "~", "<<", ">>"].some((exp) => {
-            if (line.includes(exp))
-                return true;
-        });
+        return includesSome(line, ["&", "|", "^", "~", "<<", ">>"]);
     }, "All supported"),
     new Achievement("8f2a5ec4-198e-432a-9810-0e7aab353698", "Magic Numbers", "Using a random number", false, [...allJavaScript, "python"], (line, fileType) => {
         if (fileType === "python")
-            return includes(line, ["random"]);
+            return includesSome(line, ["random"]);
         else
-            return includes(line, ["Math.random("]);
+            return includesSome(line, ["Math.random("]);
     }, "All supported"),
     new Achievement("12b5c2c0-9aab-4fa1-bfef-db20928c8cf8", "LambDuh!", "Use a lambda function", false, [...allJavaScript, "python"], (line, fileType) => {
         if (fileType === "python")
-            return includes(line, ["lambda"]);
+            return includesSome(line, ["lambda"]);
         else
             return line.match(/=.*\(.*\).*=>/g);
     }, "All supported"),
@@ -279,18 +280,18 @@ let achievements = [
     }, "All supported"),
     new Achievement("7a11106c-5868-4971-bc20-1f6f920d94a8", "Except for that...", "Write try catch/except block", false, [...allJavaScript, "python"], (line, fileType) => {
         if (fileType === "python") {
-            return includes(line, ["except"]);
+            return includesSome(line, ["except"]);
         }
         else {
-            return includes(line, ["catch"]);
+            return includesSome(line, ["catch"]);
         }
     }, "All supported"),
     new Achievement("0f669df5-ec73-41f3-a0ea-154baad3e03c", "File scripters", "Writing/opening a file", false, [...allJavaScript, "python"], (line, fileType) => {
         if (fileType === "python") {
-            return includes(line, ["open", ".write"]);
+            return includesSome(line, ["open", ".write"]);
         }
         else {
-            return includes(line, ["require('fs')"]);
+            return includesSome(line, ["require('fs')"]);
         }
     }),
     // TODO: Harder achievements to implement
@@ -363,19 +364,19 @@ let achievements = [
         return true;
     }),
     new Achievement("c6db06d0-0a47-4f37-8dab-2879ebfbd6e6", "Cartograph", "Use the first map data type in your code", false, allJavaScript, (line) => {
-        return includes(line, ["new Map("]);
+        return includesSome(line, ["new Map("]);
     }),
     new Achievement("bad81e57-1dcc-4fe4-8177-dddfa9444022", "Spread the Joy", "Unpack a variable with ...", false, allJavaScript, (line) => {
-        return includes(line, ["..."]);
+        return includesSome(line, ["..."]);
     }),
     new Achievement("3cb38afc-bdea-468f-a9b1-415b37a05ceb", "Parallel Universe", "Create a asynchronous function", false, allJavaScript, (line) => {
-        return includes(line, ["async"]);
+        return includesSome(line, ["async"]);
     }),
     new Achievement("1d34e095-c59b-4f39-9b4e-54403af28944", "Promise Keeper", "Use a promise", false, allJavaScript, (line) => {
-        return includes(line, ["new Promise("]);
+        return includesSome(line, ["new Promise("]);
     }),
     new Achievement("3bc37b31-7439-4df0-a218-a2e37c5b80a9", "Documentation Dynamo", "Write a JSDoc comment", false, allJavaScript, (line) => {
-        return includes(line, ["@param", "@returns"]);
+        return includesSome(line, ["@param", "@returns"]);
     }),
     // HTML Achievements
     new Achievement("2f869a47-fec5-4b56-86ba-afc19d7e4f79", "HTML Hero", "Write your first HTML program", false, allHTML, () => {
@@ -385,23 +386,29 @@ let achievements = [
         return line.match(/<.*[^-]-[^-].*>/g) !== null;
     }),
     new Achievement("6bf81a2a-24d0-4881-9b40-f66da8fc9a49", "Pixel Picasso", "Show an image or svg", false, allHTML, (line) => {
-        return includes(line, ["<img", "<svg"]);
+        return includesSome(line, ["<img", "<svg"]);
     }),
     new Achievement("14d7578e-d134-467c-bfc5-bb537864a31d", "The missing link", "Create a hyperlink", false, allHTML, (line) => {
-        return includes(line, ["<a"]);
+        return includesSome(line, ["<a"]);
     }),
     new Achievement("52b55a14-3281-4dc4-8386-afcecf88cb96", "List Lover", "Create a list", false, allHTML, (line) => {
-        return includes(line, ["<ul", "<ol"]);
+        return includesSome(line, ["<ul", "<ol"]);
     }),
     new Achievement("429e4c3e-f395-4f08-a06e-9fe7abe9e4d7", "Table Turner", "Create a table", false, allHTML, (line) => {
-        return includes(line, ["<table"]);
+        return includesSome(line, ["<table"]);
     }),
     new Achievement("fbb6e27a-a003-4ea7-8cb0-5e580bd75451", "Frame it!", "Include an iframe", false, allHTML, (line) => {
-        return includes(line, ["<iframe"]);
+        return includesSome(line, ["<iframe"]);
     }),
     // python
     new Achievement("52e39100-5731-4aa8-b280-ac42ce5f41e1", "Pythonic", "Write your first Python program", false, ["python"], (line) => {
         return true;
+    }),
+    new Achievement("7e6f3e4b-5f9a-4c5e-9f3b-9e1d2e3b4b3b", "Numbers are not good enough", "Use NumPy Module", false, ["python"], (line) => {
+        return includesSome(line, ["numpy", "np."]);
+    }),
+    new Achievement("f2c7e2b3-3e1d-4d8d-8a5f-0e2b2b8b7b7b", "Pandas Pandemonium", "Use Pandas Module", false, ["python"], (line) => {
+        return includesSome(line, ["pandas", "pd."]);
     }),
 ];
 
