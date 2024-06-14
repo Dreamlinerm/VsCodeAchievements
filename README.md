@@ -1,4 +1,4 @@
-# Code Achievements
+# Achievements for VS Code
 
 ## Features
 
@@ -27,7 +27,7 @@ Reset all achievements:
 
 ## Installation
 
-Download in vs code marketplace
+Download in vs code marketplace(not yet finished)
 
 ## Development
 
