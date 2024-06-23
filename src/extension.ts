@@ -51,6 +51,3 @@ export function activate(context: vscode.ExtensionContext) {
   );
   context.subscriptions.push(resetAchievementsCommand, showAchievementsCommand);
 }
-
-// This method is called when your extension is deactivated
-export function deactivate() {}

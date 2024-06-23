@@ -58,14 +58,13 @@ export function checkForCompletion(
   const line = doc.lineAt(change.range.start.line).text;
   achievements.forEach((achievement) => {
     // If the condition is true and the achievement isn't done
-    if (achievement.done) return;
-    if (!achievement.fileTypes.includes(fileType)) return;
+    if (achievement.done || !achievement.fileTypes.includes(fileType)) return;
     if (achievement.name === "Line by Line" && change) {
       const newLines = change.text.split("\n").length - 1;
       if (achievement.checkCondition(context, newLines, GlobalChangedLines)) {
         achievement.finished(context, achievements);
       }
-    } else if (achievement.checkCondition(line, fileType)) {
+    } else if (achievement.checkCondition(line, fileType, change)) {
       achievement.finished(context, achievements);
     }
   });
@@ -358,6 +357,33 @@ let achievements = [
         return GlobalChangedLines > 10000;
       }
       return false;
+    },
+    "All supported"
+  ),
+  new Achievement(
+    "f2d3b5a5-0e5b-4b8f-8c1f-4b5f8c1f4b5f",
+    "Forever Stuck in a Loop",
+    "Write a while true loop",
+    false,
+    [...allJavaScript, "python"],
+    (line: string, fileType: string) => {
+      if (fileType === "python") return includesSome(line, ["while True:"]);
+      else return includesSome(line, ["while (true)", "while (1)"]);
+    },
+    "All supported"
+  ),
+  new Achievement(
+    "0ad47b2a-13e0-453c-a0b0-f9cd40ebd36e",
+    "Code Plagiarist",
+    "Copy 50 lines of code at once",
+    false,
+    [...allJavaScript, "python"],
+    (
+      line: string,
+      fileType: string,
+      change: vscode.TextDocumentContentChangeEvent
+    ) => {
+      return (change.text.match(/\n/g) || []).length >= 50;
     },
     "All supported"
   ),
