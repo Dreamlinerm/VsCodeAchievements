@@ -387,6 +387,17 @@ let achievements = [
     },
     "All supported"
   ),
+  new Achievement(
+    "1eba3491-4985-44cc-87d3-bc31079bdbdf",
+    "Snake Charmer",
+    "Use Snake case in your code",
+    false,
+    [...allJavaScript, "python"],
+    (line: string, fileType: string) => {
+      return includesEvery(line, ["=", "_"]);
+    },
+    "All supported"
+  ),
   // TODO: Harder achievements to implement
   // new Achievement(
   //   "Code Minimization Guru",
