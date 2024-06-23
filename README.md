@@ -31,7 +31,7 @@ To access the commands, press `ctrl+shift+p`
 
 ## Installation
 
-Download in vs code marketplace
+Download in [vs code marketplace](https://marketplace.visualstudio.com/items?itemName=Dreamliner.achievements)
 
 ## Development
 
